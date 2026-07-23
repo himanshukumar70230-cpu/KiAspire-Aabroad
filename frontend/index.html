@@ -460,7 +460,7 @@
     servicesGrid.innerHTML = top.map(function(s, i){
       return '<div class="service-card reveal is-visible">' +
         '<span class="service-card-mark">' + marks[i % marks.length] + '</span>' +
-        '<h3>' + escapeHtml(s.title) + '</h3>' +
+        '<h3>' + escapeHtml(s.name) + '</h3>' +
         '<p>' + escapeHtml(s.description) + '</p>' +
         '</div>';
     }).join('');
@@ -485,7 +485,7 @@
       return;
     }
     storiesSlider.innerHTML = top.map(function(s, i){
-      var quote = s.quote || s.content || '';
+      var quote = s.description || '';
       return '<blockquote class="story' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '">' +
         '<p class="story-quote">"' + escapeHtml(quote) + '"</p>' +
         '<footer class="story-attr">' + escapeHtml(s.studentName) + ' — now at ' + escapeHtml(s.university) + (s.country ? ', ' + escapeHtml(s.country) : '') + '</footer>' +

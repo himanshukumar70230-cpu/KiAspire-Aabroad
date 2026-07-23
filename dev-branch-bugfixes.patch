@@ -1,0 +1,147 @@
+diff --git a/backend/index.js b/backend/index.js
+index a448b29..1a1d51e 100644
+--- a/backend/index.js
++++ b/backend/index.js
+@@ -24,7 +24,8 @@ app.use(
+   cors({
+     origin: [
+       "http://127.0.0.1:5500",
+-      "http://localhost:300"
++      "http://localhost:5500",
++      "http://localhost:3000"
+     ],
+     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+     allowedHeaders: ["Content-Type", "Authorization"]
+@@ -41,7 +42,7 @@ app.get("/", (req, res) => {
+   res.send("API is running...");
+ });
+ 
+-const PORT =  3300;
++const PORT = process.env.PORT || 3300;
+ 
+ app.listen(PORT, () => {
+   console.log(`Server running on port ${PORT}`);
+diff --git a/frontend/admin/dashboard.html b/frontend/admin/dashboard.html
+index 84005e4..eaa8803 100644
+--- a/frontend/admin/dashboard.html
++++ b/frontend/admin/dashboard.html
+@@ -96,7 +96,7 @@
+     var users = results[0] || [], services = results[1] || [], stories = results[2] || [];
+ 
+     document.getElementById('statUsers').textContent = users.length;
+-    document.getElementById('statActiveUsers').textContent = users.filter(function(u){ return u.status === 'active'; }).length;
++    document.getElementById('statActiveUsers').textContent = users.filter(function(u){ return u.isActive === true; }).length;
+     document.getElementById('statServices').textContent = services.length;
+     document.getElementById('statStories').textContent = stories.length;
+ 
+diff --git a/frontend/admin/user-detail.html b/frontend/admin/user-detail.html
+index b2b06db..d7ad90a 100644
+--- a/frontend/admin/user-detail.html
++++ b/frontend/admin/user-detail.html
+@@ -76,32 +76,35 @@
+   var heading = document.querySelector('.admin-title');
+ 
+   function render(u){
++    var userId = u._id || u.id;
++    var isActive = u.isActive === true;
++
+     heading.textContent = u.name || 'User Detail';
+     card.innerHTML =
+       '<div class="detail-grid">' +
+         '<div class="detail-field"><strong>Full Name</strong><span>' + escapeHtml(u.name) + '</span></div>' +
+-        '<div class="detail-field"><strong>Status</strong><span><span class="status-badge is-' + (u.status === 'active' ? 'active' : 'inactive') + '">' + escapeHtml(u.status || 'inactive') + '</span></span></div>' +
++        '<div class="detail-field"><strong>Status</strong><span><span class="status-badge is-' + (isActive ? 'active' : 'inactive') + '">' + (isActive ? 'Active' : 'Inactive') + '</span></span></div>' +
+         '<div class="detail-field"><strong>Email</strong><span>' + escapeHtml(u.email) + '</span></div>' +
+         '<div class="detail-field"><strong>Phone</strong><span>' + escapeHtml(u.phone) + '</span></div>' +
+         '<div class="detail-field"><strong>Registered</strong><span>' + formatDate(u.createdAt) + '</span></div>' +
+-        '<div class="detail-field"><strong>User ID</strong><span>' + escapeHtml(u.id) + '</span></div>' +
++        '<div class="detail-field"><strong>User ID</strong><span>' + escapeHtml(userId) + '</span></div>' +
+       '</div>' +
+       '<div class="admin-topbar-actions" style="margin-top:28px;">' +
+-        '<button type="button" class="btn btn-outline" id="toggleStatusBtn">Mark as ' + (u.status === 'active' ? 'Inactive' : 'Active') + '</button>' +
++        '<button type="button" class="btn btn-outline" id="toggleStatusBtn">Mark as ' + (isActive ? 'Inactive' : 'Active') + '</button>' +
+         '<button type="button" class="btn btn-outline" id="deleteUserBtn" style="border-color:#A6432B; color:#A6432B;">Delete User</button>' +
+         '<a href="users.html" class="btn btn-dark">Back to All Users</a>' +
+       '</div>';
+ 
+     document.getElementById('toggleStatusBtn').addEventListener('click', function(){
+-      var next = u.status === 'active' ? 'inactive' : 'active';
+-      if(!confirm('Mark this user as ' + next + '?')) return;
+-      window.KiAspireAPI.setAdminUserStatus(u.id, next)
++      var nextActive = !isActive;
++      if(!confirm('Mark this user as ' + (nextActive ? 'active' : 'inactive') + '?')) return;
++      window.KiAspireAPI.setAdminUserStatus(userId, nextActive)
+         .then(function(){ window.location.reload(); })
+         .catch(function(err){ console.error(err); alert('Could not update status.'); });
+     });
+     document.getElementById('deleteUserBtn').addEventListener('click', function(){
+       if(!confirm('Delete this user permanently? This cannot be undone.')) return;
+-      window.KiAspireAPI.deleteAdminUser(u.id)
++      window.KiAspireAPI.deleteAdminUser(userId)
+         .then(function(){ window.location.href = 'users.html'; })
+         .catch(function(err){ console.error(err); alert('Could not delete this user.'); });
+     });
+diff --git a/frontend/index.html b/frontend/index.html
+index f554518..126aafb 100644
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -460,7 +460,7 @@
+     servicesGrid.innerHTML = top.map(function(s, i){
+       return '<div class="service-card reveal is-visible">' +
+         '<span class="service-card-mark">' + marks[i % marks.length] + '</span>' +
+-        '<h3>' + escapeHtml(s.title) + '</h3>' +
++        '<h3>' + escapeHtml(s.name) + '</h3>' +
+         '<p>' + escapeHtml(s.description) + '</p>' +
+         '</div>';
+     }).join('');
+@@ -485,7 +485,7 @@
+       return;
+     }
+     storiesSlider.innerHTML = top.map(function(s, i){
+-      var quote = s.quote || s.content || '';
++      var quote = s.description || '';
+       return '<blockquote class="story' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '">' +
+         '<p class="story-quote">"' + escapeHtml(quote) + '"</p>' +
+         '<footer class="story-attr">' + escapeHtml(s.studentName) + ' — now at ' + escapeHtml(s.university) + (s.country ? ', ' + escapeHtml(s.country) : '') + '</footer>' +
+diff --git a/frontend/services.html b/frontend/services.html
+index e7440f3..ed48a5f 100644
+--- a/frontend/services.html
++++ b/frontend/services.html
+@@ -137,7 +137,7 @@
+     grid.innerHTML = services.map(function(s, i){
+       return '<div class="service-card reveal is-visible">' +
+         '<span class="service-card-mark">' + (marks[i % marks.length]) + '</span>' +
+-        '<h3>' + escapeHtml(s.title) + '</h3>' +
++        '<h3>' + escapeHtml(s.name) + '</h3>' +
+         '<p>' + escapeHtml(s.description) + '</p>' +
+         '</div>';
+     }).join('');
+diff --git a/frontend/stories.html b/frontend/stories.html
+index 3a5ac5a..1bb2b6e 100644
+--- a/frontend/stories.html
++++ b/frontend/stories.html
+@@ -131,8 +131,9 @@
+       return;
+     }
+     grid.innerHTML = stories.map(function(s){
+-      var thumb = s.thumbnailUrl || ('https://picsum.photos/seed/kiaspire-story-' + s.id + '/640/480');
+-      return '<a class="story-card reveal is-visible" href="story-detail.html?id=' + encodeURIComponent(s.id) + '">' +
++      var storyId = s._id || s.id;
++      var thumb = s.thumbnail || ('https://picsum.photos/seed/kiaspire-story-' + storyId + '/640/480');
++      return '<a class="story-card reveal is-visible" href="story-detail.html?id=' + encodeURIComponent(storyId) + '">' +
+         '<div class="story-card-media"><img src="' + escapeHtml(thumb) + '" alt="' + escapeHtml(s.studentName) + '" loading="lazy"></div>' +
+         '<div class="story-card-body">' +
+           '<span class="story-card-country">' + escapeHtml(s.country) + '</span>' +
+diff --git a/frontend/story-detail.html b/frontend/story-detail.html
+index 5ef065d..e6075c7 100644
+--- a/frontend/story-detail.html
++++ b/frontend/story-detail.html
+@@ -175,7 +175,7 @@
+         : '';
+     }
+ 
+-    var bodyText = story.content || story.quote || '';
++    var bodyText = story.description || '';
+     contentEl.innerHTML = bodyText
+       ? bodyText.split(/\n+/).filter(Boolean).map(function(p){ return '<p>' + escapeHtml(p) + '</p>'; }).join('')
+       : '<p>No written story available for this student yet — watch the video above for the full account.</p>';

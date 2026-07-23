@@ -23,10 +23,7 @@ connectDB().then(async () => {
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://127.0.0.1:5500",
-      "http://localhost:300"
-    ],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
@@ -43,7 +40,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-const PORT =  3300;
+const PORT = process.env.PORT || 3300;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -96,7 +96,7 @@
     var users = results[0] || [], services = results[1] || [], stories = results[2] || [];
 
     document.getElementById('statUsers').textContent = users.length;
-    document.getElementById('statActiveUsers').textContent = users.filter(function(u){ return u.status === 'active'; }).length;
+    document.getElementById('statActiveUsers').textContent = users.filter(function(u){ return u.isActive === true; }).length;
     document.getElementById('statServices').textContent = services.length;
     document.getElementById('statStories').textContent = stories.length;
 

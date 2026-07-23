@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  const API_BASE = 'http://localhost:3300/api';
+  const API_BASE = 'https://kiaspire-aabroad.onrender.com/api';
 
   const TOKEN_KEY = 'kiaspire_admin_token';
   const ADMIN_KEY = 'kiaspire_admin_info';

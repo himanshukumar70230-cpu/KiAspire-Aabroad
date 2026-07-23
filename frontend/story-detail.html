@@ -175,7 +175,7 @@
         : '';
     }
 
-    var bodyText = story.content || story.quote || '';
+    var bodyText = story.description || '';
     contentEl.innerHTML = bodyText
       ? bodyText.split(/\n+/).filter(Boolean).map(function(p){ return '<p>' + escapeHtml(p) + '</p>'; }).join('')
       : '<p>No written story available for this student yet — watch the video above for the full account.</p>';

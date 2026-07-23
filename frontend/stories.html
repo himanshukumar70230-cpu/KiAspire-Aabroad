@@ -131,8 +131,9 @@
       return;
     }
     grid.innerHTML = stories.map(function(s){
-      var thumb = s.thumbnailUrl || ('https://picsum.photos/seed/kiaspire-story-' + s.id + '/640/480');
-      return '<a class="story-card reveal is-visible" href="story-detail.html?id=' + encodeURIComponent(s.id) + '">' +
+      var storyId = s._id || s.id;
+      var thumb = s.thumbnail || ('https://picsum.photos/seed/kiaspire-story-' + storyId + '/640/480');
+      return '<a class="story-card reveal is-visible" href="story-detail.html?id=' + encodeURIComponent(storyId) + '">' +
         '<div class="story-card-media"><img src="' + escapeHtml(thumb) + '" alt="' + escapeHtml(s.studentName) + '" loading="lazy"></div>' +
         '<div class="story-card-body">' +
           '<span class="story-card-country">' + escapeHtml(s.country) + '</span>' +

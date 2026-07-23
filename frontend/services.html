@@ -137,7 +137,7 @@
     grid.innerHTML = services.map(function(s, i){
       return '<div class="service-card reveal is-visible">' +
         '<span class="service-card-mark">' + (marks[i % marks.length]) + '</span>' +
-        '<h3>' + escapeHtml(s.title) + '</h3>' +
+        '<h3>' + escapeHtml(s.name) + '</h3>' +
         '<p>' + escapeHtml(s.description) + '</p>' +
         '</div>';
     }).join('');

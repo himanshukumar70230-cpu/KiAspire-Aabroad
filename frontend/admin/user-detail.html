@@ -76,32 +76,35 @@
   var heading = document.querySelector('.admin-title');
 
   function render(u){
+    var userId = u._id || u.id;
+    var isActive = u.isActive === true;
+
     heading.textContent = u.name || 'User Detail';
     card.innerHTML =
       '<div class="detail-grid">' +
         '<div class="detail-field"><strong>Full Name</strong><span>' + escapeHtml(u.name) + '</span></div>' +
-        '<div class="detail-field"><strong>Status</strong><span><span class="status-badge is-' + (u.status === 'active' ? 'active' : 'inactive') + '">' + escapeHtml(u.status || 'inactive') + '</span></span></div>' +
+        '<div class="detail-field"><strong>Status</strong><span><span class="status-badge is-' + (isActive ? 'active' : 'inactive') + '">' + (isActive ? 'Active' : 'Inactive') + '</span></span></div>' +
         '<div class="detail-field"><strong>Email</strong><span>' + escapeHtml(u.email) + '</span></div>' +
         '<div class="detail-field"><strong>Phone</strong><span>' + escapeHtml(u.phone) + '</span></div>' +
         '<div class="detail-field"><strong>Registered</strong><span>' + formatDate(u.createdAt) + '</span></div>' +
-        '<div class="detail-field"><strong>User ID</strong><span>' + escapeHtml(u.id) + '</span></div>' +
+        '<div class="detail-field"><strong>User ID</strong><span>' + escapeHtml(userId) + '</span></div>' +
       '</div>' +
       '<div class="admin-topbar-actions" style="margin-top:28px;">' +
-        '<button type="button" class="btn btn-outline" id="toggleStatusBtn">Mark as ' + (u.status === 'active' ? 'Inactive' : 'Active') + '</button>' +
+        '<button type="button" class="btn btn-outline" id="toggleStatusBtn">Mark as ' + (isActive ? 'Inactive' : 'Active') + '</button>' +
         '<button type="button" class="btn btn-outline" id="deleteUserBtn" style="border-color:#A6432B; color:#A6432B;">Delete User</button>' +
         '<a href="users.html" class="btn btn-dark">Back to All Users</a>' +
       '</div>';
 
     document.getElementById('toggleStatusBtn').addEventListener('click', function(){
-      var next = u.status === 'active' ? 'inactive' : 'active';
-      if(!confirm('Mark this user as ' + next + '?')) return;
-      window.KiAspireAPI.setAdminUserStatus(u.id, next)
+      var nextActive = !isActive;
+      if(!confirm('Mark this user as ' + (nextActive ? 'active' : 'inactive') + '?')) return;
+      window.KiAspireAPI.setAdminUserStatus(userId, nextActive)
         .then(function(){ window.location.reload(); })
         .catch(function(err){ console.error(err); alert('Could not update status.'); });
     });
     document.getElementById('deleteUserBtn').addEventListener('click', function(){
       if(!confirm('Delete this user permanently? This cannot be undone.')) return;
-      window.KiAspireAPI.deleteAdminUser(u.id)
+      window.KiAspireAPI.deleteAdminUser(userId)
         .then(function(){ window.location.href = 'users.html'; })
         .catch(function(err){ console.error(err); alert('Could not delete this user.'); });
     });
