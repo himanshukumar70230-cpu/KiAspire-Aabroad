@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const connectDB = require("./config/db");
 const createDefaultAdmin = require("./utils/defaultAdmin");
+const adminPasswordRoutes = require("./Routes/adminPasswordRoute");
 
 const userRoutes = require("./Routes/userRoute");
 const adminRoutes = require("./Routes/adminRoute");
@@ -36,6 +37,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/story", storyRoutes);
+app.use("/api/admin/password", adminPasswordRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

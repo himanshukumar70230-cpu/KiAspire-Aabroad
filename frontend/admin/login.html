@@ -3,88 +3,937 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Admin Login — Ki Aspire Abroad</title>
+
 <meta name="robots" content="noindex, nofollow">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
 <link rel="stylesheet" href="../style.css">
+
+<style>
+  .hidden {
+    display: none !important;
+  }
+
+  .forgot-password-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: "Archivo", sans-serif;
+    font-size: 14px;
+    color: #1f4d3d;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .forgot-password-link:hover {
+    text-decoration: underline;
+  }
+
+  .password-actions {
+    text-align: right;
+    margin-top: -4px;
+    margin-bottom: 18px;
+  }
+
+  .login-step-title {
+    margin-bottom: 6px;
+  }
+
+  .login-step-description {
+    margin-bottom: 24px;
+  }
+
+  .otp-input {
+    letter-spacing: 8px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .secondary-button {
+    width: 100%;
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid #1f4d3d;
+    color: #1f4d3d;
+  }
+
+  .secondary-button:hover {
+    background: #f1f6f4;
+  }
+
+  .password-requirements {
+    margin-top: 8px;
+    font-family: "Archivo", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #69756f;
+  }
+
+  .resend-wrapper {
+    margin-top: 16px;
+    text-align: center;
+    font-family: "Archivo", sans-serif;
+    font-size: 13px;
+  }
+
+  .resend-button {
+    border: none;
+    background: none;
+    color: #1f4d3d;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .resend-button:disabled {
+    color: #999;
+    cursor: not-allowed;
+  }
+</style>
 </head>
+
 <body class="admin-body">
 
 <div class="login-shell">
   <div class="login-card">
-    <div class="login-logo"><img src="../Logo.webp" alt="Ki Aspire Abroad"></div>
-    <h1 class="login-title">Admin Sign In</h1>
-    <p class="login-sub">Staff access only.</p>
+
+    <div class="login-logo">
+      <img src="../Logo.webp" alt="Ki Aspire Abroad">
+    </div>
 
     <div class="form-status" id="formStatus"></div>
 
-    <form id="loginForm" novalidate>
-      <div class="form-field" id="fieldEmail">
-        <label for="email">Email address</label>
-        <input type="email" id="email" name="email" autocomplete="username" placeholder="you@kiaspireabroad.com" required>
-        <span class="form-error">Please enter a valid email address.</span>
-      </div>
-      <div class="form-field" id="fieldPassword">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
-        <span class="form-error">Please enter your password.</span>
-      </div>
-      <button type="submit" class="btn btn-dark" id="submitBtn">Sign In</button>
-    </form>
+    <!-- LOGIN SECTION -->
+    <section id="loginSection">
+      <h1 class="login-title">Admin Sign In</h1>
+      <p class="login-sub">Staff access only.</p>
 
-    <a href="../index.html" class="login-back">← Back to the main site</a>
+      <form id="loginForm" novalidate>
+
+        <div class="form-field" id="fieldEmail">
+          <label for="email">Email address</label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="username"
+            placeholder="you@kiaspireabroad.com"
+            required
+          >
+
+          <span class="form-error">
+            Please enter a valid email address.
+          </span>
+        </div>
+
+        <div class="form-field" id="fieldPassword">
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            required
+          >
+
+          <span class="form-error">
+            Please enter your password.
+          </span>
+        </div>
+
+        <div class="password-actions">
+          <a href="#" class="forgot-password-link" id="forgotPasswordLink">
+            Forgot password?
+          </a>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-dark"
+          id="submitBtn"
+        >
+          Sign In
+        </button>
+
+      </form>
+    </section>
+
+    <!-- FORGOT PASSWORD SECTION -->
+    <section id="forgotPasswordSection" class="hidden">
+
+      <h1 class="login-title login-step-title">
+        Forgot Password
+      </h1>
+
+      <p class="login-sub login-step-description">
+        Enter the registered admin email. We will send a 6-digit OTP.
+      </p>
+
+      <form id="forgotPasswordForm" novalidate>
+
+        <div class="form-field" id="fieldResetEmail">
+
+          <label for="resetEmail">
+            Admin email address
+          </label>
+
+          <input
+            type="email"
+            id="resetEmail"
+            name="resetEmail"
+            autocomplete="email"
+            placeholder="you@kiaspireabroad.com"
+            required
+          >
+
+          <span class="form-error">
+            Please enter a valid email address.
+          </span>
+
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-dark"
+          id="sendOtpBtn"
+        >
+          Send OTP
+        </button>
+
+        <button
+          type="button"
+          class="btn secondary-button"
+          data-back-to-login
+        >
+          Back to Sign In
+        </button>
+
+      </form>
+    </section>
+
+    <!-- VERIFY OTP SECTION -->
+    <section id="verifyOtpSection" class="hidden">
+
+      <h1 class="login-title login-step-title">
+        Verify OTP
+      </h1>
+
+      <p class="login-sub login-step-description">
+        Enter the 6-digit OTP sent to
+        <strong id="otpEmailText"></strong>.
+      </p>
+
+      <form id="verifyOtpForm" novalidate>
+
+        <div class="form-field" id="fieldOtp">
+
+          <label for="otp">
+            Verification code
+          </label>
+
+          <input
+            type="text"
+            id="otp"
+            name="otp"
+            class="otp-input"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            placeholder="000000"
+            required
+          >
+
+          <span class="form-error">
+            Please enter the valid 6-digit OTP.
+          </span>
+
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-dark"
+          id="verifyOtpBtn"
+        >
+          Verify OTP
+        </button>
+
+        <div class="resend-wrapper">
+          Didn't receive the OTP?
+
+          <button
+            type="button"
+            class="resend-button"
+            id="resendOtpBtn"
+          >
+            Resend OTP
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="btn secondary-button"
+          id="changeEmailBtn"
+        >
+          Change Email
+        </button>
+
+      </form>
+    </section>
+
+    <!-- CHANGE PASSWORD SECTION -->
+    <section id="changePasswordSection" class="hidden">
+
+      <h1 class="login-title login-step-title">
+        Create New Password
+      </h1>
+
+      <p class="login-sub login-step-description">
+        Enter a secure password for your admin account.
+      </p>
+
+      <form id="changePasswordForm" novalidate>
+
+        <div class="form-field" id="fieldNewPassword">
+
+          <label for="newPassword">
+            New password
+          </label>
+
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            autocomplete="new-password"
+            placeholder="Enter new password"
+            required
+          >
+
+          <span class="form-error">
+            Password must contain at least 8 characters.
+          </span>
+
+          <p class="password-requirements">
+            Use at least 8 characters with an uppercase letter,
+            lowercase letter, number and special character.
+          </p>
+
+        </div>
+
+        <div class="form-field" id="fieldConfirmPassword">
+
+          <label for="confirmPassword">
+            Confirm new password
+          </label>
+
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            autocomplete="new-password"
+            placeholder="Confirm new password"
+            required
+          >
+
+          <span class="form-error">
+            Passwords do not match.
+          </span>
+
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-dark"
+          id="changePasswordBtn"
+        >
+          Change Password
+        </button>
+
+      </form>
+    </section>
+
+    <a href="../index.html" class="login-back">
+      ← Back to the main site
+    </a>
+
   </div>
 </div>
 
 <script src="../api.js"></script>
+
 <script>
-(function(){
-  // Already signed in? Skip straight to the dashboard.
-  if(window.KiAspireAPI && window.KiAspireAPI.isLoggedIn()){
-    window.location.href = 'dashboard.html';
+(function () {
+  "use strict";
+
+  var loginSection = document.getElementById("loginSection");
+  var forgotPasswordSection =
+    document.getElementById("forgotPasswordSection");
+  var verifyOtpSection =
+    document.getElementById("verifyOtpSection");
+  var changePasswordSection =
+    document.getElementById("changePasswordSection");
+
+  var statusEl = document.getElementById("formStatus");
+
+  var resetEmailValue = "";
+  var resetToken = "";
+
+  // Redirect already logged-in admin
+  if (
+    window.KiAspireAPI &&
+    typeof window.KiAspireAPI.isLoggedIn === "function" &&
+    window.KiAspireAPI.isLoggedIn()
+  ) {
+    window.location.href = "dashboard.html";
+    return;
   }
 
-  var form = document.getElementById('loginForm');
-  var statusEl = document.getElementById('formStatus');
-  var submitBtn = document.getElementById('submitBtn');
-  var emailField = document.getElementById('fieldEmail');
-  var passwordField = document.getElementById('fieldPassword');
+  function hideAllSections() {
+    loginSection.classList.add("hidden");
+    forgotPasswordSection.classList.add("hidden");
+    verifyOtpSection.classList.add("hidden");
+    changePasswordSection.classList.add("hidden");
+  }
 
-  document.getElementById('email').addEventListener('input', function(){ emailField.classList.remove('has-error'); });
-  document.getElementById('password').addEventListener('input', function(){ passwordField.classList.remove('has-error'); });
+  function showSection(section) {
+    hideAllSections();
+    section.classList.remove("hidden");
+    clearStatus();
+  }
 
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    statusEl.className = 'form-status';
+  function showStatus(message, type) {
+    statusEl.className = "form-status is-visible";
 
-    var email = document.getElementById('email').value.trim();
-    var password = document.getElementById('password').value;
+    if (type === "error") {
+      statusEl.classList.add("is-error");
+    }
 
-    var ok = true;
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ emailField.classList.add('has-error'); ok = false; }
-    if(!password){ passwordField.classList.add('has-error'); ok = false; }
-    if(!ok) return;
+    if (type === "success") {
+      statusEl.classList.add("is-success");
+    }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Signing in…';
+    statusEl.textContent = message;
+  }
 
-    window.KiAspireAPI.adminLogin(email, password)
-      .then(function(){
-        window.location.href = 'dashboard.html';
-      })
-      .catch(function(err){
-        console.error('adminLogin failed:', err);
-        statusEl.className = 'form-status is-visible is-error';
-        statusEl.textContent = (err && err.status === 401)
-          ? 'Incorrect email or password.'
-          : ((err && err.message) || 'Something went wrong. Please try again.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign In';
-      });
+  function clearStatus() {
+    statusEl.className = "form-status";
+    statusEl.textContent = "";
+  }
+
+  function setButtonLoading(button, loadingText, normalText, isLoading) {
+    button.disabled = isLoading;
+    button.textContent = isLoading ? loadingText : normalText;
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function isValidPassword(password) {
+    return (
+      password.length >= 8 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /\d/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  }
+
+  function getErrorMessage(error, fallbackMessage) {
+    if (
+      error &&
+      error.data &&
+      error.data.message
+    ) {
+      return error.data.message;
+    }
+
+    if (error && error.message) {
+      return error.message;
+    }
+
+    return fallbackMessage;
+  }
+
+  /*
+   * LOGIN
+   */
+
+  var loginForm = document.getElementById("loginForm");
+  var loginEmail = document.getElementById("email");
+  var loginPassword = document.getElementById("password");
+
+  var emailField = document.getElementById("fieldEmail");
+  var passwordField = document.getElementById("fieldPassword");
+
+  var submitBtn = document.getElementById("submitBtn");
+
+  loginEmail.addEventListener("input", function () {
+    emailField.classList.remove("has-error");
   });
+
+  loginPassword.addEventListener("input", function () {
+    passwordField.classList.remove("has-error");
+  });
+
+  loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    clearStatus();
+
+    var email = loginEmail.value.trim().toLowerCase();
+    var password = loginPassword.value;
+
+    var isValid = true;
+
+    if (!isValidEmail(email)) {
+      emailField.classList.add("has-error");
+      isValid = false;
+    }
+
+    if (!password) {
+      passwordField.classList.add("has-error");
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    setButtonLoading(
+      submitBtn,
+      "Signing in…",
+      "Sign In",
+      true
+    );
+
+    try {
+      await window.KiAspireAPI.adminLogin(email, password);
+
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error("Admin login failed:", error);
+
+      var message =
+        error && error.status === 401
+          ? "Incorrect email or password."
+          : getErrorMessage(
+              error,
+              "Something went wrong. Please try again."
+            );
+
+      showStatus(message, "error");
+
+      setButtonLoading(
+        submitBtn,
+        "Signing in…",
+        "Sign In",
+        false
+      );
+    }
+  });
+
+  /*
+   * OPEN FORGOT PASSWORD
+   */
+
+  document
+    .getElementById("forgotPasswordLink")
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+
+      var enteredEmail = loginEmail.value.trim();
+
+      if (enteredEmail) {
+        document.getElementById("resetEmail").value = enteredEmail;
+      }
+
+      showSection(forgotPasswordSection);
+    });
+
+  /*
+   * SEND OTP
+   */
+
+  var forgotPasswordForm =
+    document.getElementById("forgotPasswordForm");
+
+  var resetEmailInput =
+    document.getElementById("resetEmail");
+
+  var resetEmailField =
+    document.getElementById("fieldResetEmail");
+
+  var sendOtpBtn =
+    document.getElementById("sendOtpBtn");
+
+  resetEmailInput.addEventListener("input", function () {
+    resetEmailField.classList.remove("has-error");
+  });
+
+  forgotPasswordForm.addEventListener(
+    "submit",
+    async function (event) {
+      event.preventDefault();
+      clearStatus();
+
+      var email =
+        resetEmailInput.value.trim().toLowerCase();
+
+      if (!isValidEmail(email)) {
+        resetEmailField.classList.add("has-error");
+        return;
+      }
+
+      setButtonLoading(
+        sendOtpBtn,
+        "Sending OTP…",
+        "Send OTP",
+        true
+      );
+
+      try {
+        await window.KiAspireAPI.sendAdminPasswordOtp(email);
+
+        resetEmailValue = email;
+
+        document.getElementById("otpEmailText").textContent =
+          resetEmailValue;
+
+        showSection(verifyOtpSection);
+
+        showStatus(
+          "OTP sent successfully. Please check your email.",
+          "success"
+        );
+
+        startResendTimer();
+      } catch (error) {
+        console.error("Send OTP failed:", error);
+
+        showStatus(
+          getErrorMessage(
+            error,
+            "Unable to send OTP. Please try again."
+          ),
+          "error"
+        );
+      } finally {
+        setButtonLoading(
+          sendOtpBtn,
+          "Sending OTP…",
+          "Send OTP",
+          false
+        );
+      }
+    }
+  );
+
+  /*
+   * VERIFY OTP
+   */
+
+  var verifyOtpForm =
+    document.getElementById("verifyOtpForm");
+
+  var otpInput =
+    document.getElementById("otp");
+
+  var otpField =
+    document.getElementById("fieldOtp");
+
+  var verifyOtpBtn =
+    document.getElementById("verifyOtpBtn");
+
+  otpInput.addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 6);
+    otpField.classList.remove("has-error");
+  });
+
+  verifyOtpForm.addEventListener(
+    "submit",
+    async function (event) {
+      event.preventDefault();
+      clearStatus();
+
+      var otp = otpInput.value.trim();
+
+      if (!/^\d{6}$/.test(otp)) {
+        otpField.classList.add("has-error");
+        return;
+      }
+
+      setButtonLoading(
+        verifyOtpBtn,
+        "Verifying…",
+        "Verify OTP",
+        true
+      );
+
+      try {
+        var response =
+          await window.KiAspireAPI.verifyAdminPasswordOtp(
+            resetEmailValue,
+            otp
+          );
+
+        /*
+         * Recommended backend response:
+         *
+         * {
+         *   success: true,
+         *   message: "OTP verified successfully",
+         *   resetToken: "temporary-reset-token"
+         * }
+         */
+
+        if (response && response.resetToken) {
+          resetToken = response.resetToken;
+        }
+
+        showSection(changePasswordSection);
+
+        showStatus(
+          "OTP verified successfully. Create your new password.",
+          "success"
+        );
+      } catch (error) {
+        console.error("OTP verification failed:", error);
+
+        showStatus(
+          getErrorMessage(
+            error,
+            "Invalid or expired OTP."
+          ),
+          "error"
+        );
+      } finally {
+        setButtonLoading(
+          verifyOtpBtn,
+          "Verifying…",
+          "Verify OTP",
+          false
+        );
+      }
+    }
+  );
+
+  /*
+   * RESEND OTP
+   */
+
+  var resendOtpBtn =
+    document.getElementById("resendOtpBtn");
+
+  var resendTimer = null;
+
+  function startResendTimer() {
+    var seconds = 30;
+
+    clearInterval(resendTimer);
+
+    resendOtpBtn.disabled = true;
+    resendOtpBtn.textContent =
+      "Resend OTP in " + seconds + "s";
+
+    resendTimer = setInterval(function () {
+      seconds--;
+
+      if (seconds <= 0) {
+        clearInterval(resendTimer);
+        resendOtpBtn.disabled = false;
+        resendOtpBtn.textContent = "Resend OTP";
+        return;
+      }
+
+      resendOtpBtn.textContent =
+        "Resend OTP in " + seconds + "s";
+    }, 1000);
+  }
+
+  resendOtpBtn.addEventListener(
+    "click",
+    async function () {
+      clearStatus();
+
+      if (!resetEmailValue) {
+        showSection(forgotPasswordSection);
+        return;
+      }
+
+      resendOtpBtn.disabled = true;
+      resendOtpBtn.textContent = "Sending…";
+
+      try {
+        await window.KiAspireAPI.sendAdminPasswordOtp(
+          resetEmailValue
+        );
+
+        showStatus(
+          "A new OTP has been sent to your email.",
+          "success"
+        );
+
+        startResendTimer();
+      } catch (error) {
+        console.error("Resend OTP failed:", error);
+
+        showStatus(
+          getErrorMessage(
+            error,
+            "Unable to resend OTP."
+          ),
+          "error"
+        );
+
+        resendOtpBtn.disabled = false;
+        resendOtpBtn.textContent = "Resend OTP";
+      }
+    }
+  );
+
+  /*
+   * CHANGE PASSWORD
+   */
+
+  var changePasswordForm =
+    document.getElementById("changePasswordForm");
+
+  var newPasswordInput =
+    document.getElementById("newPassword");
+
+  var confirmPasswordInput =
+    document.getElementById("confirmPassword");
+
+  var newPasswordField =
+    document.getElementById("fieldNewPassword");
+
+  var confirmPasswordField =
+    document.getElementById("fieldConfirmPassword");
+
+  var changePasswordBtn =
+    document.getElementById("changePasswordBtn");
+
+  newPasswordInput.addEventListener("input", function () {
+    newPasswordField.classList.remove("has-error");
+  });
+
+  confirmPasswordInput.addEventListener("input", function () {
+    confirmPasswordField.classList.remove("has-error");
+  });
+
+  changePasswordForm.addEventListener(
+    "submit",
+    async function (event) {
+      event.preventDefault();
+      clearStatus();
+
+      var newPassword = newPasswordInput.value;
+      var confirmPassword = confirmPasswordInput.value;
+
+      var isValid = true;
+
+      if (!isValidPassword(newPassword)) {
+        newPasswordField.classList.add("has-error");
+        isValid = false;
+      }
+
+      if (
+        !confirmPassword ||
+        newPassword !== confirmPassword
+      ) {
+        confirmPasswordField.classList.add("has-error");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      setButtonLoading(
+        changePasswordBtn,
+        "Changing Password…",
+        "Change Password",
+        true
+      );
+
+      try {
+        await window.KiAspireAPI.changeAdminPassword({
+          email: resetEmailValue,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+          resetToken: resetToken
+        });
+
+        showSection(loginSection);
+
+        showStatus(
+          "Password changed successfully. You can now sign in.",
+          "success"
+        );
+
+        loginEmail.value = resetEmailValue;
+        loginPassword.value = "";
+
+        resetEmailValue = "";
+        resetToken = "";
+
+        forgotPasswordForm.reset();
+        verifyOtpForm.reset();
+        changePasswordForm.reset();
+      } catch (error) {
+        console.error("Change password failed:", error);
+
+        showStatus(
+          getErrorMessage(
+            error,
+            "Unable to change password. Please request a new OTP."
+          ),
+          "error"
+        );
+      } finally {
+        setButtonLoading(
+          changePasswordBtn,
+          "Changing Password…",
+          "Change Password",
+          false
+        );
+      }
+    }
+  );
+
+  /*
+   * NAVIGATION BUTTONS
+   */
+
+  document
+    .querySelectorAll("[data-back-to-login]")
+    .forEach(function (button) {
+      button.addEventListener("click", function () {
+        showSection(loginSection);
+      });
+    });
+
+  document
+    .getElementById("changeEmailBtn")
+    .addEventListener("click", function () {
+      otpInput.value = "";
+      showSection(forgotPasswordSection);
+    });
+
 })();
 </script>
+
 </body>
 </html>

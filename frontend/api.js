@@ -274,8 +274,43 @@
 
     return data;
   }
+  // POST /api/admin/password/forgot-password
+function sendAdminPasswordOtp(email) {
+  return request("/admin/password/forgot-password", {
+    method: "POST",
+    body: {
+      email,
+    },
+  });
+}
 
-  function adminLogout() {
+// POST /api/admin/password/verify-otp
+function verifyAdminPasswordOtp(email, otp) {
+  return request("/admin/password/verify-otp", {
+    method: "POST",
+    body: {
+      email,
+      otp,
+    },
+  });
+}
+
+// PATCH /api/admin/password/change-password
+function changeAdminPassword(passwordData) {
+  return request("/admin/password/change-password", {
+    method: "PATCH",
+    body: {
+      email: passwordData.email,
+      newPassword: passwordData.newPassword,
+      confirmPassword: passwordData.confirmPassword,
+      resetToken: passwordData.resetToken,
+    },
+  });
+}
+
+
+
+function adminLogout() {
     clearToken();
   }
 
@@ -574,8 +609,10 @@
     registerUser: registerUser,
 
     adminLogin: adminLogin,
+    sendAdminPasswordOtp: sendAdminPasswordOtp,
+    verifyAdminPasswordOtp: verifyAdminPasswordOtp,
+    changeAdminPassword: changeAdminPassword,
     adminLogout: adminLogout,
-    getAdminProfile: getAdminProfile,
 
     getAdminUsers: getAdminUsers,
     getAdminUser: getAdminUser,
