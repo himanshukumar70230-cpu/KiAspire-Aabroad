@@ -606,7 +606,14 @@ function adminLogout() {
     getServices: getServices,
     getStories: getStories,
     getStory: getStory,
+    
     registerUser: registerUser,
+    // registerStudent: registerStudent,
+    // loginUser: loginUser,
+    // getMyProgress: getMyProgress,
+    // getMyProfile: getMyProfile,
+    // logoutStudent: logoutStudent,
+
 
     adminLogin: adminLogin,
     sendAdminPasswordOtp: sendAdminPasswordOtp,

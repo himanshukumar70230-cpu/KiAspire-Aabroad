@@ -11,6 +11,7 @@ const userRoutes = require("./Routes/userRoute");
 const adminRoutes = require("./Routes/adminRoute");
 const serviceRoutes = require("./Routes/serviceRoute");
 const storyRoutes = require("./Routes/storyRoute");
+const progressRoutes = require("./Routes/progressRoute");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/story", storyRoutes);
 app.use("/api/admin/password", adminPasswordRoutes);
+app.use("/api/progrss",progressRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
