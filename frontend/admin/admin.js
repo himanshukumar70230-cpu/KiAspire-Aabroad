@@ -1,5 +1,5 @@
 /* ============================================================
-   Ki Aspire Abroad — Admin Panel Shared Behavior
+   KiAspire Aabroad — Admin Panel Shared Behavior
    ============================================================
    Included on every gated admin page (never on login.html).
    Handles: the auth guard, logout, mobile sidebar toggle, and
@@ -19,8 +19,9 @@
     var logoutBtns = document.querySelectorAll('[data-admin-logout]');
     logoutBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
-        window.KiAspireAPI.adminLogout();
-        window.location.href = 'login.html';
+        window.KiAspireAPI.adminLogout().then(function () {
+          window.location.href = 'login.html';
+        });
       });
     });
 

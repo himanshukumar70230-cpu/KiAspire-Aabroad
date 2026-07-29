@@ -1,30 +1,25 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/userModel");
+const userModel = require("../models/userModel");
 
 const createDefaultAdmin = async () => {
   try {
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({
-      email: process.env.ADMIN_EMAIL,
-    });
+    const existingAdmin = await userModel.findByEmailAndRole(
+      process.env.ADMIN_EMAIL,
+      "admin"
+    );
 
     if (existingAdmin) {
       console.log("Default admin already exists");
       return;
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(
-      process.env.ADMIN_PASSWORD,
-      12
-    );
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
 
-    // Create admin
-    await User.create({
+    await userModel.create({
       name: process.env.ADMIN_NAME,
       email: process.env.ADMIN_EMAIL,
       phone: process.env.ADMIN_PHONE,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       role: "admin",
     });
 

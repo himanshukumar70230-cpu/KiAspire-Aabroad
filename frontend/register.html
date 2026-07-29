@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Get Started — Ki Aspire Abroad</title>
+<title>Get Started — KiAspire Aabroad</title>
 <meta name="description" content="Tell us a little about yourself and your counsellor will be in touch within one business day.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,18 +15,20 @@
 <div class="progress-bar" id="progressBar"></div>
 
 <nav class="nav" id="nav">
-  <a class="nav-mark" href="index.html" aria-label="Ki Aspire Abroad — home">
+  <a class="nav-mark" href="index.html" aria-label="KiAspire Aabroad — home">
     <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
   </a>
   <div class="nav-links">
     <a href="about.html">About</a>
     <a href="services.html">Services</a>
+    <a href="study-abroad-for-free.html">Study Free</a>
     <a href="index.html#destinations">Destinations</a>
     <a href="stories.html">Stories</a>
     <a href="register.html">Get Started</a>
+    <a href="login.html">Log In</a>
   </div>
   <div class="nav-cta">
-    <a href="register.html" class="btn btn-dark">Book a Consultation</a>
+    <a href="register.html?service=book-a-consultation" class="btn btn-dark">Book a Consultation</a>
     <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span>
     </button>
@@ -36,8 +38,10 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="about.html">About</a>
   <a href="services.html">Services</a>
+  <a href="study-abroad-for-free.html">Study Free</a>
   <a href="index.html#destinations">Destinations</a>
   <a href="stories.html">Stories</a>
+  <a href="login.html">Log In</a>
   <a href="register.html" class="mobile-menu-cta">Get Started</a>
 </div>
 
@@ -45,7 +49,7 @@
   <div class="container">
     <p class="eyebrow eyebrow--light reveal" style="--d:0">Get Started</p>
     <h1 class="page-hero-title reveal" style="--d:1">Let's find out where you're <em>headed.</em></h1>
-    <p class="page-hero-sub reveal" style="--d:2">Leave your details and your counsellor will call within one business day — no obligation, no call centre.</p>
+    <p class="page-hero-sub reveal" style="--d:2">Choose what you need help with — your counsellor will be in touch within one business day.</p>
   </div>
 </header>
 
@@ -54,6 +58,14 @@
     <div class="form-card reveal is-visible" style="max-width:none;">
       <div class="form-status" id="formStatus"></div>
       <form id="registerForm" novalidate>
+        <div class="form-field" id="fieldService">
+          <label for="service">What do you need help with?</label>
+          <select id="service" name="service" required>
+            <option value="">Loading services…</option>
+          </select>
+          <span class="form-error">Please choose a service.</span>
+        </div>
+
         <div class="form-field" id="fieldName">
           <label for="name">Full name</label>
           <input type="text" id="name" name="name" autocomplete="name" placeholder="Your full name" required>
@@ -71,7 +83,18 @@
             <span class="form-error">Please enter a valid phone number.</span>
           </div>
         </div>
-        <button type="submit" class="btn btn-dark" id="submitBtn" style="margin-top:8px;">Book My Free Consultation</button>
+
+        <div class="form-field" id="fieldPassword" style="display:none;">
+          <label for="password">Create a password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" placeholder="At least 6 characters">
+          <span class="form-error">Password must be at least 6 characters.</span>
+        </div>
+
+        <div id="dynamicFields"></div>
+
+        <p class="form-status is-visible" id="redirectNote" style="display:none; background:var(--pine-mid); color:var(--ink);"></p>
+
+        <button type="submit" class="btn btn-dark" id="submitBtn" style="margin-top:8px;">Continue</button>
       </form>
     </div>
   </div>
@@ -83,20 +106,21 @@
       <div class="nav-mark footer-mark">
         <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
       </div>
-      <p class="footer-tagline">Independent study abroad counselling headquartered in Kolkata, working with students across India.</p>
+      <p class="footer-tagline">Independent study Aabroad counselling headquartered in Kolkata, working with students across India.</p>
       <p class="footer-dpa">Dream <span>·</span> Plan <span>·</span> Achieve</p>
     </div>
     <div class="footer-col">
       <p class="footer-heading">Explore</p>
       <a href="about.html">About</a>
       <a href="services.html">Services</a>
+      <a href="study-abroad-for-free.html">Study Abroad for Free</a>
       <a href="index.html#destinations">Destinations</a>
       <a href="stories.html">Stories</a>
     </div>
     <div class="footer-col">
       <p class="footer-heading">Contact</p>
-      <a href="mailto:hello@kiaspireabroad.com">hello@kiaspireabroad.com</a>
-      <a href="tel:+918981572430">+91 89815 72430</a>
+      <a href="mailto:hello@kiaspireAabroad.com">hello@kiaspireAabroad.com</a>
+      <a href="tel:+919831631352">9831631352</a>
       <span>Kolkata, India</span>
     </div>
     <div class="footer-col">
@@ -106,7 +130,7 @@
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© <span id="year"></span> Ki Aspire Abroad. All rights reserved.</span>
+    <span>© <span id="year"></span> KiAspire Aabroad. All rights reserved.</span>
     <span>Designed for ambitious students.</span>
   </div>
 </footer>
@@ -118,27 +142,26 @@
   var form = document.getElementById('registerForm');
   var statusEl = document.getElementById('formStatus');
   var submitBtn = document.getElementById('submitBtn');
+  var serviceSelect = document.getElementById('service');
+  var serviceFieldWrap = document.getElementById('fieldService');
+  var dynamicFieldsContainer = document.getElementById('dynamicFields');
+  var passwordField = document.getElementById('fieldPassword');
+  var passwordInput = document.getElementById('password');
+  var redirectNote = document.getElementById('redirectNote');
 
-  var fields = {
+  var services = [];
+  var selectedService = null;
+  var fieldControllers = [];
+
+  var contactFields = {
     name: { el: document.getElementById('fieldName'), test: function(v){ return v.trim().length >= 2; } },
     email: { el: document.getElementById('fieldEmail'), test: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); } },
     phone: { el: document.getElementById('fieldPhone'), test: function(v){ return /^[+\d][\d\s-]{7,15}$/.test(v.trim()); } }
   };
 
-  function validate(){
-    var ok = true;
-    Object.keys(fields).forEach(function(key){
-      var input = document.getElementById(key);
-      var valid = fields[key].test(input.value);
-      fields[key].el.classList.toggle('has-error', !valid);
-      if(!valid) ok = false;
-    });
-    return ok;
-  }
-
-  Object.keys(fields).forEach(function(key){
+  Object.keys(contactFields).forEach(function(key){
     document.getElementById(key).addEventListener('input', function(){
-      fields[key].el.classList.remove('has-error');
+      contactFields[key].el.classList.remove('has-error');
     });
   });
 
@@ -147,11 +170,300 @@
     statusEl.textContent = message;
   }
 
+  function validateContact(){
+    var ok = true;
+    Object.keys(contactFields).forEach(function(key){
+      var input = document.getElementById(key);
+      var valid = contactFields[key].test(input.value);
+      contactFields[key].el.classList.toggle('has-error', !valid);
+      if(!valid) ok = false;
+    });
+    return ok;
+  }
+
+  /* ---------- dynamic field rendering ---------- */
+
+  function renderDynamicField(field){
+    var wrapper = document.createElement('div');
+    wrapper.className = 'form-field';
+
+    var label = document.createElement('label');
+    label.textContent = field.label + (field.isRequired ? ' *' : '');
+    wrapper.appendChild(label);
+
+    var controller = { fieldKey: field.fieldKey, wrapper: wrapper, field: field };
+
+    if(field.allowMultiple && field.isOrdered){
+      var items = [];
+      var listEl = document.createElement('ol');
+      listEl.className = 'ranked-list';
+      var inputRow = document.createElement('div');
+      inputRow.className = 'ranked-list-input-row';
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = field.placeholder || 'Type a value and press Add';
+      var addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.className = 'btn btn-light ranked-list-add';
+      addBtn.textContent = 'Add';
+
+      function renderList(){
+        listEl.innerHTML = '';
+        items.forEach(function(value, idx){
+          var li = document.createElement('li');
+          li.className = 'ranked-list-item';
+          var span = document.createElement('span');
+          span.textContent = value;
+          li.appendChild(span);
+
+          var controls = document.createElement('div');
+          controls.className = 'ranked-list-controls';
+
+          if(idx > 0){
+            var upBtn = document.createElement('button');
+            upBtn.type = 'button';
+            upBtn.textContent = '↑';
+            upBtn.setAttribute('aria-label', 'Move up');
+            upBtn.addEventListener('click', function(){
+              var tmp = items[idx-1]; items[idx-1] = items[idx]; items[idx] = tmp; renderList();
+            });
+            controls.appendChild(upBtn);
+          }
+          if(idx < items.length - 1){
+            var downBtn = document.createElement('button');
+            downBtn.type = 'button';
+            downBtn.textContent = '↓';
+            downBtn.setAttribute('aria-label', 'Move down');
+            downBtn.addEventListener('click', function(){
+              var tmp = items[idx+1]; items[idx+1] = items[idx]; items[idx] = tmp; renderList();
+            });
+            controls.appendChild(downBtn);
+          }
+
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.textContent = '×';
+          removeBtn.setAttribute('aria-label', 'Remove');
+          removeBtn.addEventListener('click', function(){
+            items.splice(idx,1); renderList();
+          });
+          controls.appendChild(removeBtn);
+
+          li.appendChild(controls);
+          listEl.appendChild(li);
+        });
+      }
+
+      addBtn.addEventListener('click', function(){
+        var v = input.value.trim();
+        if(!v) return;
+        items.push(v);
+        input.value = '';
+        input.focus();
+        renderList();
+      });
+      input.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); addBtn.click(); }
+      });
+
+      inputRow.appendChild(input);
+      inputRow.appendChild(addBtn);
+      wrapper.appendChild(inputRow);
+      wrapper.appendChild(listEl);
+
+      controller.getValue = function(){ return items.slice(); };
+      controller.isEmpty = function(){ return items.length === 0; };
+    } else if(field.fieldType === 'select' && !field.allowMultiple){
+      var select = document.createElement('select');
+      var placeholderOpt = document.createElement('option');
+      placeholderOpt.value = '';
+      placeholderOpt.textContent = 'Select…';
+      select.appendChild(placeholderOpt);
+      (field.options || []).forEach(function(opt){
+        var o = document.createElement('option');
+        o.value = opt.value;
+        o.textContent = opt.label;
+        select.appendChild(o);
+      });
+      wrapper.appendChild(select);
+      controller.getValue = function(){ return select.value; };
+      controller.isEmpty = function(){ return !select.value; };
+    } else if(field.fieldType === 'radio' || field.fieldType === 'checkbox'){
+      var groupDiv = document.createElement('div');
+      groupDiv.className = 'field-option-group';
+      var inputType = field.allowMultiple ? 'checkbox' : 'radio';
+      (field.options || []).forEach(function(opt){
+        var optLabel = document.createElement('label');
+        optLabel.className = 'field-option';
+        var inp = document.createElement('input');
+        inp.type = inputType;
+        inp.name = field.fieldKey;
+        inp.value = opt.value;
+        optLabel.appendChild(inp);
+        optLabel.appendChild(document.createTextNode(' ' + opt.label));
+        groupDiv.appendChild(optLabel);
+      });
+      wrapper.appendChild(groupDiv);
+      controller.getValue = function(){
+        var checked = Array.prototype.slice.call(groupDiv.querySelectorAll('input:checked')).map(function(i){ return i.value; });
+        return field.allowMultiple ? checked : (checked[0] || '');
+      };
+      controller.isEmpty = function(){
+        var v = controller.getValue();
+        return field.allowMultiple ? v.length === 0 : !v;
+      };
+    } else if(field.fieldType === 'textarea'){
+      var ta = document.createElement('textarea');
+      if(field.placeholder) ta.placeholder = field.placeholder;
+      wrapper.appendChild(ta);
+      controller.getValue = function(){ return ta.value.trim(); };
+      controller.isEmpty = function(){ return !ta.value.trim(); };
+    } else {
+      var inputEl = document.createElement('input');
+      inputEl.type = field.fieldType === 'number' ? 'number' : (field.fieldType === 'date' ? 'date' : 'text');
+      if(field.placeholder) inputEl.placeholder = field.placeholder;
+      wrapper.appendChild(inputEl);
+      controller.getValue = function(){ return inputEl.value.trim(); };
+      controller.isEmpty = function(){ return !inputEl.value.trim(); };
+    }
+
+    if(field.helpText){
+      var help = document.createElement('p');
+      help.className = 'form-help';
+      help.textContent = field.helpText;
+      wrapper.appendChild(help);
+    }
+
+    var errorSpan = document.createElement('span');
+    errorSpan.className = 'form-error';
+    errorSpan.textContent = 'This field is required.';
+    wrapper.appendChild(errorSpan);
+
+    return controller;
+  }
+
+  function clearDynamicFields(){
+    dynamicFieldsContainer.innerHTML = '';
+    fieldControllers = [];
+  }
+
+  function loadServiceFields(serviceId){
+    dynamicFieldsContainer.innerHTML = '<p class="state-block">Loading form…</p>';
+    window.KiAspireAPI.getServiceFields(serviceId)
+      .then(function(fields){
+        dynamicFieldsContainer.innerHTML = '';
+        fieldControllers = fields.map(function(field){
+          var controller = renderDynamicField(field);
+          dynamicFieldsContainer.appendChild(controller.wrapper);
+          return controller;
+        });
+      })
+      .catch(function(err){
+        console.error('Failed to load service fields:', err);
+        dynamicFieldsContainer.innerHTML = '<p class="state-block">Could not load this service’s questions. Please try again.</p>';
+      });
+  }
+
+  function validateDynamicFields(){
+    var ok = true;
+    fieldControllers.forEach(function(controller){
+      var isEmpty = controller.isEmpty();
+      controller.wrapper.classList.toggle('has-error', controller.field.isRequired && isEmpty);
+      if(controller.field.isRequired && isEmpty) ok = false;
+    });
+    return ok;
+  }
+
+  function collectFieldValues(){
+    var values = {};
+    fieldControllers.forEach(function(controller){
+      if(!controller.isEmpty()) values[controller.fieldKey] = controller.getValue();
+    });
+    return values;
+  }
+
+  /* ---------- service selection ---------- */
+
+  function renderServiceOptions(){
+    serviceSelect.innerHTML = '<option value="">Choose a service…</option>';
+    services.forEach(function(service){
+      var opt = document.createElement('option');
+      opt.value = service.id;
+      opt.textContent = service.name;
+      serviceSelect.appendChild(opt);
+    });
+  }
+
+  function onServiceChange(){
+    serviceFieldWrap.classList.remove('has-error');
+    var serviceId = serviceSelect.value;
+    selectedService = services.filter(function(s){ return String(s.id) === String(serviceId); })[0] || null;
+    clearDynamicFields();
+    redirectNote.style.display = 'none';
+
+    if(!selectedService){
+      passwordField.style.display = 'none';
+      submitBtn.textContent = 'Continue';
+      return;
+    }
+
+    if(selectedService.kind === 'external_redirect'){
+      passwordField.style.display = 'none';
+      redirectNote.style.display = 'block';
+      redirectNote.textContent = 'We’ll take your name and email and send you straight to our booking calendar — no password needed.';
+      submitBtn.textContent = 'Continue to Booking';
+    } else {
+      passwordField.style.display = '';
+      submitBtn.textContent = 'Create My Account';
+      loadServiceFields(selectedService.id);
+    }
+  }
+
+  serviceSelect.addEventListener('change', onServiceChange);
+
+  window.KiAspireAPI.getServices()
+    .then(function(list){
+      services = list;
+      renderServiceOptions();
+
+      var params = new URLSearchParams(window.location.search);
+      var preselectSlug = params.get('service');
+      if(preselectSlug){
+        var match = services.filter(function(s){ return s.slug === preselectSlug; })[0];
+        if(match){
+          serviceSelect.value = match.id;
+          onServiceChange();
+        }
+      }
+    })
+    .catch(function(err){
+      console.error('Failed to load services:', err);
+      serviceSelect.innerHTML = '<option value="">Unable to load services — please refresh</option>';
+    });
+
+  /* ---------- submit ---------- */
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     statusEl.className = 'form-status';
 
-    if(!validate()){
+    if(!selectedService){
+      serviceFieldWrap.classList.add('has-error');
+      showStatus('error', 'Please choose a service.');
+      return;
+    }
+
+    var contactOk = validateContact();
+    var isFormService = selectedService.kind !== 'external_redirect';
+    var dynamicOk = isFormService ? validateDynamicFields() : true;
+
+    var passwordOk = true;
+    if(isFormService){
+      passwordOk = passwordInput.value.length >= 6;
+      passwordField.classList.toggle('has-error', !passwordOk);
+    }
+
+    if(!contactOk || !dynamicOk || !passwordOk){
       showStatus('error', 'Please fix the highlighted fields and try again.');
       return;
     }
@@ -159,28 +471,31 @@
     var payload = {
       name: document.getElementById('name').value.trim(),
       email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim()
+      phone: document.getElementById('phone').value.trim(),
+      serviceId: selectedService.id
     };
+
+    if(isFormService){
+      payload.password = passwordInput.value;
+      payload.fieldValues = collectFieldValues();
+    }
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting…';
 
-    if(!window.KiAspireAPI){
-      showStatus('error', 'Something went wrong. Please try again in a moment.');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Book My Free Consultation';
-      return;
-    }
-
     window.KiAspireAPI.registerUser(payload)
-      .then(function(){
-        window.location.href = 'thank-you.html';
+      .then(function(data){
+        if(data && data.redirectUrl){
+          window.location.href = data.redirectUrl;
+        } else {
+          window.location.href = 'dashboard.html';
+        }
       })
       .catch(function(err){
         console.error('registerUser failed:', err);
         showStatus('error', (err && err.message) || 'Something went wrong submitting your details. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Book My Free Consultation';
+        onServiceChange();
       });
   });
 })();

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — KiAspire Aabroad</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain"></div>
+
+<nav class="nav" id="nav">
+  <a class="nav-mark" href="index.html" aria-label="KiAspire Aabroad — home">
+    <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
+  </a>
+  <div class="nav-links">
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="study-abroad-for-free.html">Study Free</a>
+    <a href="stories.html">Stories</a>
+    <a href="dashboard.html">My Dashboard</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn btn-dark" id="logoutBtn" type="button">Log Out</button>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="study-abroad-for-free.html">Study Free</a>
+  <a href="stories.html">Stories</a>
+  <a href="#" id="mobileLogoutBtn" class="mobile-menu-cta">Log Out</a>
+</div>
+
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow eyebrow--light reveal" style="--d:0">My Dashboard</p>
+    <h1 class="page-hero-title reveal" style="--d:1">Welcome back<span id="welcomeName">.</span></h1>
+    <p class="page-hero-sub reveal" style="--d:2">Progress is updated by your counsellor as your application moves forward.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" id="applicationsContainer">
+    <p class="state-block">Loading your applications…</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <div class="nav-mark footer-mark">
+        <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
+      </div>
+      <p class="footer-tagline">Independent study Aabroad counselling headquartered in Kolkata, working with students across India.</p>
+      <p class="footer-dpa">Dream <span>·</span> Plan <span>·</span> Achieve</p>
+    </div>
+    <div class="footer-col">
+      <p class="footer-heading">Explore</p>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="study-abroad-for-free.html">Study Abroad for Free</a>
+      <a href="stories.html">Stories</a>
+    </div>
+    <div class="footer-col">
+      <p class="footer-heading">Contact</p>
+      <a href="mailto:hello@kiaspireAabroad.com">hello@kiaspireAabroad.com</a>
+     <a href="tel:+919831631352">9831631352</a>
+      <span>Kolkata, India</span>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> KiAspire Aabroad. All rights reserved.</span>
+    <span>Designed for ambitious students.</span>
+  </div>
+</footer>
+
+<script src="api.js"></script>
+<script src="script.js" defer></script>
+<script>
+(function(){
+  // Auth guard — runs immediately, before the rest of the page matters.
+  if(!window.KiAspireAPI || !window.KiAspireAPI.isStudentLoggedIn()){
+    window.location.href = 'login.html';
+    return;
+  }
+
+  function doLogout(){
+    window.KiAspireAPI.studentLogout().then(function(){
+      window.location.href = 'login.html';
+    });
+  }
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+  document.getElementById('mobileLogoutBtn').addEventListener('click', function(e){ e.preventDefault(); doLogout(); });
+
+  var cached = window.KiAspireAPI.getCachedStudent();
+  var welcomeEl = document.getElementById('welcomeName');
+  if(cached && cached.name){
+    welcomeEl.textContent = ', ' + cached.name.split(' ')[0] + '.';
+  }
+
+  var container = document.getElementById('applicationsContainer');
+
+  function renderPhaseSteps(phases, currentPhaseIndex, isClosed){
+    var wrap = document.createElement('div');
+    wrap.className = 'phase-steps';
+
+    phases.forEach(function(phase, idx){
+      var step = document.createElement('div');
+      var state = isClosed ? 'is-closed' : (idx < currentPhaseIndex ? 'is-done' : (idx === currentPhaseIndex ? 'is-current' : 'is-upcoming'));
+      step.className = 'phase-step ' + state;
+
+      var dot = document.createElement('span');
+      dot.className = 'phase-step-dot';
+      step.appendChild(dot);
+
+      var label = document.createElement('span');
+      label.className = 'phase-step-label';
+      label.textContent = phase.label;
+      step.appendChild(label);
+
+      wrap.appendChild(step);
+    });
+
+    return wrap;
+  }
+
+  function renderFieldValues(fieldValues){
+    if(!fieldValues || typeof fieldValues !== 'object') return null;
+    var keys = Object.keys(fieldValues);
+    if(!keys.length) return null;
+
+    var grid = document.createElement('div');
+    grid.className = 'detail-grid';
+    grid.style.marginTop = '24px';
+
+    keys.forEach(function(key){
+      var value = fieldValues[key];
+      var field = document.createElement('div');
+      field.className = 'detail-field';
+
+      var strong = document.createElement('strong');
+      strong.textContent = key.replace(/_/g, ' ');
+      field.appendChild(strong);
+
+      var span = document.createElement('span');
+      span.textContent = Array.isArray(value) ? value.join(', ') : String(value);
+      field.appendChild(span);
+
+      grid.appendChild(field);
+    });
+
+    return grid;
+  }
+
+  function renderApplication(app, phases){
+    var card = document.createElement('div');
+    card.className = 'admin-card admin-card-pad';
+    card.style.marginBottom = '24px';
+
+    var head = document.createElement('div');
+    head.className = 'admin-topbar';
+
+    var titleWrap = document.createElement('div');
+    var title = document.createElement('h2');
+    title.className = 'admin-title';
+    title.textContent = app.serviceName;
+    titleWrap.appendChild(title);
+
+    var sub = document.createElement('p');
+    sub.className = 'cell-muted';
+    sub.textContent = app.isClosed
+      ? ('Closed' + (app.closedReason ? ': ' + app.closedReason : ''))
+      : ('Currently: ' + app.stageLabel);
+    titleWrap.appendChild(sub);
+
+    head.appendChild(titleWrap);
+
+    if(app.isClosed){
+      var badge = document.createElement('span');
+      badge.className = 'status-badge is-inactive';
+      badge.textContent = 'Closed';
+      head.appendChild(badge);
+    }
+
+    card.appendChild(head);
+
+    card.appendChild(renderPhaseSteps(phases, app.currentPhaseIndex, app.isClosed));
+
+    var fieldValuesBlock = renderFieldValues(app.fieldValues);
+    if(fieldValuesBlock) card.appendChild(fieldValuesBlock);
+
+    return card;
+  }
+
+  window.KiAspireAPI.getStudentDashboard()
+    .then(function(data){
+      container.innerHTML = '';
+
+      var phases = data.phases || [];
+      var applications = data.applications || [];
+
+      if(!applications.length){
+        var empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = '<p class="empty-state-title">No applications yet</p><p>Once you register for a service, its progress will show up here.</p>';
+        container.appendChild(empty);
+        return;
+      }
+
+      applications.forEach(function(app){
+        container.appendChild(renderApplication(app, phases));
+      });
+    })
+    .catch(function(err){
+      console.error('Failed to load dashboard:', err);
+      container.innerHTML = '<p class="state-block">Could not load your dashboard. Please try refreshing the page.</p>';
+    });
+})();
+</script>
+</body>
+</html>

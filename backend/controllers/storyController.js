@@ -1,27 +1,29 @@
-const Story = require("../models/storyModel");
+const storyModel = require("../models/storyModel");
+const { rowToCamel, rowsToCamel } = require("../utils/caseConvert");
 
-// Fields an admin is allowed to set/update on a story.
-// Prevents accidentally overwriting fields like createdBy via a raw body.
-const ALLOWED_FIELDS = [
-  "studentName",
-  "country",
-  "university",
-  "course",
-  "title",
-  "description",
-  "youtubeUrl",
-  "thumbnail",
-  "isFeatured",
-  "isActive",
-  "sortOrder",
-];
+// Fields an admin is allowed to set/update on a story (camelCase body key ->
+// snake_case column). Prevents accidentally overwriting fields like
+// created_by via a raw body.
+const ALLOWED_FIELDS = {
+  studentName: "student_name",
+  country: "country",
+  university: "university",
+  course: "course",
+  title: "title",
+  description: "description",
+  youtubeUrl: "youtube_url",
+  thumbnail: "thumbnail",
+  isFeatured: "is_featured",
+  isActive: "is_active",
+  sortOrder: "sort_order",
+};
 
 const pickAllowedFields = (body) => {
   const result = {};
 
-  for (const field of ALLOWED_FIELDS) {
-    if (body[field] !== undefined) {
-      result[field] = body[field];
+  for (const [bodyKey, column] of Object.entries(ALLOWED_FIELDS)) {
+    if (body[bodyKey] !== undefined) {
+      result[column] = body[bodyKey];
     }
   }
 
@@ -38,10 +40,6 @@ const createStory = async (req, res) => {
       course,
       title,
       description,
-      // FIX: the schema requires "youtubeUrl", but this controller used
-      // to read "youtubeVideoId" from the body and never set youtubeUrl
-      // at all — every story creation failed schema validation. Now the
-      // controller and schema agree on the same field name.
       youtubeUrl,
       thumbnail,
       isFeatured,
@@ -62,38 +60,27 @@ const createStory = async (req, res) => {
       });
     }
 
-    const story = await Story.create({
-      studentName,
+    const story = await storyModel.create({
+      student_name: studentName,
       country,
       university,
       course,
       title,
-      description,
-      youtubeUrl,
-      thumbnail,
-      isFeatured,
-      sortOrder,
-      createdBy: req.user._id,
+      description: description || "",
+      youtube_url: youtubeUrl,
+      thumbnail: thumbnail || "",
+      is_featured: Boolean(isFeatured),
+      sort_order: Number(sortOrder) || 0,
+      created_by: req.user.id,
     });
 
     res.status(201).json({
       success: true,
       message: "Story created successfully",
-      story,
+      story: rowToCamel(story),
     });
   } catch (error) {
     console.error("Create story error:", error.message);
-
-    if (error.name === "ValidationError") {
-      const message = Object.values(error.errors)
-        .map((item) => item.message)
-        .join(", ");
-
-      return res.status(400).json({
-        success: false,
-        message,
-      });
-    }
 
     res.status(500).json({
       success: false,
@@ -105,13 +92,12 @@ const createStory = async (req, res) => {
 // Get all active stories
 const getStories = async (req, res) => {
   try {
-    const stories = await Story.find({ isActive: true })
-      .sort({ sortOrder: 1 });
+    const stories = await storyModel.findActive();
 
     res.status(200).json({
       success: true,
       count: stories.length,
-      stories,
+      stories: rowsToCamel(stories),
     });
   } catch (error) {
     res.status(500).json({
@@ -124,7 +110,7 @@ const getStories = async (req, res) => {
 // Get story by ID
 const getStoryById = async (req, res) => {
   try {
-    const story = await Story.findById(req.params.id);
+    const story = await storyModel.findById(req.params.id);
 
     if (!story) {
       return res.status(404).json({
@@ -135,10 +121,10 @@ const getStoryById = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      story,
+      story: rowToCamel(story),
     });
   } catch (error) {
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid story ID",
@@ -155,19 +141,9 @@ const getStoryById = async (req, res) => {
 // Update Story
 const updateStory = async (req, res) => {
   try {
-    // FIX: previously passed req.body straight through to
-    // findByIdAndUpdate, which would let a caller set arbitrary fields
-    // (e.g. createdBy). Now only whitelisted fields are applied.
     const updateData = pickAllowedFields(req.body);
 
-    const story = await Story.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const story = await storyModel.update(req.params.id, updateData);
 
     if (!story) {
       return res.status(404).json({
@@ -179,24 +155,13 @@ const updateStory = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Story updated successfully",
-      story,
+      story: rowToCamel(story),
     });
   } catch (error) {
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid story ID",
-      });
-    }
-
-    if (error.name === "ValidationError") {
-      const message = Object.values(error.errors)
-        .map((item) => item.message)
-        .join(", ");
-
-      return res.status(400).json({
-        success: false,
-        message,
       });
     }
 
@@ -210,9 +175,9 @@ const updateStory = async (req, res) => {
 // Delete Story
 const deleteStory = async (req, res) => {
   try {
-    const story = await Story.findByIdAndDelete(req.params.id);
+    const deletedCount = await storyModel.deleteById(req.params.id);
 
-    if (!story) {
+    if (!deletedCount) {
       return res.status(404).json({
         success: false,
         message: "Story not found",
@@ -224,7 +189,7 @@ const deleteStory = async (req, res) => {
       message: "Story deleted successfully",
     });
   } catch (error) {
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid story ID",

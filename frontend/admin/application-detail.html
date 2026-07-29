@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Application Detail — KiAspire Aabroad Admin
+  </title>
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="../style.css"
+  >
+</head>
+
+<body class="admin-body">
+
+  <!-- Mobile bar -->
+  <div class="admin-mobile-bar">
+    <img
+      src="../Logo.webp"
+      alt="KiAspire Aabroad"
+    >
+
+    <button
+      class="admin-mobile-toggle"
+      id="adminMobileToggle"
+      type="button"
+      aria-label="Open menu"
+    >
+      ☰
+    </button>
+  </div>
+
+  <div
+    class="admin-sidebar-scrim"
+    id="adminSidebarScrim"
+  ></div>
+
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside
+      class="admin-sidebar"
+      id="adminSidebar"
+    >
+      <div class="admin-sidebar-logo">
+        <img
+          src="../Logo.webp"
+          alt="KiAspire Aabroad"
+          style="width: 100%; height: auto;"
+        >
+      </div>
+
+      <p class="admin-sidebar-tag">
+        Admin Panel
+      </p>
+
+      <nav class="admin-nav">
+
+        <a href="dashboard.html">
+          <span class="admin-nav-icon">◆</span>
+          Dashboard
+        </a>
+
+        <a href="users.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Users
+        </a>
+
+        <a href="services.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Services
+        </a>
+
+        <a href="stories.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Stories
+        </a>
+
+        <a
+          href="applications.html"
+          class="is-active"
+        >
+          <span class="admin-nav-icon">◆</span>
+          Manage Applications
+        </a>
+
+        <a href="free-study.html">
+          <span class="admin-nav-icon">◆</span>
+          Study Abroad for Free
+        </a>
+
+        <a href="site-settings.html">
+          <span class="admin-nav-icon">◆</span>
+          Site Settings
+        </a>
+
+        <a href="profile.html">
+          <span class="admin-nav-icon">◆</span>
+          My Profile
+        </a>
+
+      </nav>
+
+      <div class="admin-sidebar-footer">
+
+        <div class="admin-sidebar-admin">
+          <strong id="sidebarAdminName">
+            Admin
+          </strong>
+
+          Signed in
+        </div>
+
+        <button
+          class="admin-logout-btn"
+          type="button"
+          data-admin-logout
+        >
+          Log Out
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+
+      <a
+        href="applications.html"
+        class="table-action"
+        style="display: inline-block; margin-bottom: 18px;"
+      >
+        ← Back to Applications
+      </a>
+
+      <div class="admin-topbar">
+        <div>
+          <p class="eyebrow admin-eyebrow">Application</p>
+          <h1 class="admin-title" id="pageTitle">Loading…</h1>
+        </div>
+        <div class="admin-topbar-actions">
+          <button type="button" class="btn btn-outline" id="closeReopenBtn" style="display:none;"></button>
+          <button type="button" class="table-action is-danger" id="deleteAppBtn" style="display:none; padding: 0 8px;">Delete</button>
+        </div>
+      </div>
+
+      <div id="detailContent" style="display:none;">
+
+        <!-- Overview -->
+        <div class="admin-card admin-card-pad">
+          <div class="detail-grid">
+            <div class="detail-field"><strong>Student</strong><span id="detailName"></span></div>
+            <div class="detail-field"><strong>Email</strong><span id="detailEmail"></span></div>
+            <div class="detail-field"><strong>Phone</strong><span id="detailPhone"></span></div>
+            <div class="detail-field"><strong>Service</strong><span id="detailService"></span></div>
+            <div class="detail-field"><strong>Current Stage</strong><span id="detailStage"></span></div>
+            <div class="detail-field"><strong>Applied On</strong><span id="detailApplied"></span></div>
+          </div>
+          <div id="closedNotice" style="display:none; margin-top: 18px;">
+            <span class="status-badge is-inactive">Closed</span>
+            <span class="cell-muted" id="closedReasonText" style="margin-left: 10px;"></span>
+          </div>
+        </div>
+
+        <!-- Stage update -->
+        <div class="admin-card admin-card-pad">
+          <h2 class="modal-title" style="margin-bottom: 18px;">Update Stage</h2>
+          <div class="form-status" id="stageFormStatus"></div>
+          <form id="stageForm" novalidate>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="stageSelect">Move to stage</label>
+                <select id="stageSelect"></select>
+              </div>
+              <div class="form-field">
+                <label for="stageNote">Note (optional)</label>
+                <input type="text" id="stageNote" placeholder="e.g. Conditional offer received">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-dark" id="stageSubmitBtn">Update Stage</button>
+          </form>
+        </div>
+
+        <!-- Stage history -->
+        <div class="admin-card admin-card-pad">
+          <h2 class="modal-title" style="margin-bottom: 18px;">Stage History</h2>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Stage</th><th>Note</th><th>Changed By</th><th>When</th></tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Field values -->
+        <div class="admin-card admin-card-pad">
+          <h2 class="modal-title" style="margin-bottom: 18px;">Submitted Answers</h2>
+          <div class="form-status" id="fieldsFormStatus"></div>
+          <form id="fieldsForm" novalidate>
+            <div id="fieldsContainer"><p class="cell-muted">Loading…</p></div>
+            <button type="submit" class="btn btn-dark" id="fieldsSubmitBtn" style="margin-top: 10px;">Save Answers</button>
+          </form>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../api.js"></script>
+  <script src="admin.js"></script>
+
+  <script>
+    'use strict';
+
+    var params = new URLSearchParams(window.location.search);
+    var appId = params.get('id');
+
+    var pageTitle = document.getElementById('pageTitle');
+    var detailContent = document.getElementById('detailContent');
+    var closeReopenBtn = document.getElementById('closeReopenBtn');
+    var deleteAppBtn = document.getElementById('deleteAppBtn');
+
+    var currentApplication = null;
+    var currentFieldControllers = [];
+
+    function escapeHtml(value) {
+      var div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    if (!appId) {
+      pageTitle.textContent = 'No application specified';
+    }
+
+    /* ---------- overview + history ---------- */
+
+    function renderOverview(app, history) {
+      document.getElementById('detailName').textContent = app.userName;
+      document.getElementById('detailEmail').textContent = app.userEmail;
+      document.getElementById('detailPhone').textContent = app.userPhone;
+      document.getElementById('detailService').textContent = app.serviceName;
+      document.getElementById('detailStage').textContent = app.stageLabel + ' (since ' + formatDateTime(app.currentStageSince) + ')';
+      document.getElementById('detailApplied').textContent = formatDateTime(app.createdAt);
+
+      var closedNotice = document.getElementById('closedNotice');
+      if (app.isClosed) {
+        closedNotice.style.display = '';
+        document.getElementById('closedReasonText').textContent = app.closedReason || 'No reason given';
+      } else {
+        closedNotice.style.display = 'none';
+      }
+
+      closeReopenBtn.style.display = '';
+      closeReopenBtn.textContent = app.isClosed ? 'Reopen Application' : 'Close Application';
+
+      deleteAppBtn.style.display = '';
+
+      var historyBody = document.getElementById('historyBody');
+
+      if (!history.length) {
+        historyBody.innerHTML = '<tr><td colspan="4" class="cell-muted">No stage changes recorded yet.</td></tr>';
+      } else {
+        historyBody.innerHTML = history.map(function (h) {
+          return (
+            '<tr>' +
+              '<td class="cell-primary">' + escapeHtml(h.stageLabel) + '</td>' +
+              '<td class="cell-muted">' + escapeHtml(h.note || '—') + '</td>' +
+              '<td class="cell-muted">' + escapeHtml(h.changedByName) + '</td>' +
+              '<td class="cell-muted">' + formatDateTime(h.changedAt) + '</td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+    }
+
+    async function populateStageSelect(currentStageId) {
+      var stages = await window.KiAspireAPI.getAdminPipelineStages();
+      var select = document.getElementById('stageSelect');
+
+      select.innerHTML = stages.map(function (s) {
+        return '<option value="' + escapeHtml(s.id) + '"' + (String(s.id) === String(currentStageId) ? ' selected' : '') + '>' + escapeHtml(s.label) + '</option>';
+      }).join('');
+    }
+
+    /* ---------- field values (dynamic form, prefilled) ---------- */
+
+    function renderDynamicField(field, currentValue) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'form-field';
+
+      var label = document.createElement('label');
+      label.textContent = field.label + (field.isRequired ? ' *' : '');
+      wrapper.appendChild(label);
+
+      var controller = { fieldKey: field.fieldKey };
+
+      if (field.allowMultiple && field.isOrdered) {
+        var items = Array.isArray(currentValue) ? currentValue.slice() : [];
+        var listEl = document.createElement('ol');
+        listEl.className = 'ranked-list';
+        var inputRow = document.createElement('div');
+        inputRow.className = 'ranked-list-input-row';
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = field.placeholder || 'Add a value';
+        var addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'btn btn-light ranked-list-add';
+        addBtn.textContent = 'Add';
+
+        function renderList() {
+          listEl.innerHTML = '';
+          items.forEach(function (value, idx) {
+            var li = document.createElement('li');
+            li.className = 'ranked-list-item';
+            var span = document.createElement('span');
+            span.textContent = value;
+            li.appendChild(span);
+
+            var controls = document.createElement('div');
+            controls.className = 'ranked-list-controls';
+
+            if (idx > 0) {
+              var upBtn = document.createElement('button');
+              upBtn.type = 'button'; upBtn.textContent = '↑';
+              upBtn.addEventListener('click', function () {
+                var tmp = items[idx - 1]; items[idx - 1] = items[idx]; items[idx] = tmp; renderList();
+              });
+              controls.appendChild(upBtn);
+            }
+            if (idx < items.length - 1) {
+              var downBtn = document.createElement('button');
+              downBtn.type = 'button'; downBtn.textContent = '↓';
+              downBtn.addEventListener('click', function () {
+                var tmp = items[idx + 1]; items[idx + 1] = items[idx]; items[idx] = tmp; renderList();
+              });
+              controls.appendChild(downBtn);
+            }
+
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button'; removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', function () { items.splice(idx, 1); renderList(); });
+            controls.appendChild(removeBtn);
+
+            li.appendChild(controls);
+            listEl.appendChild(li);
+          });
+        }
+
+        addBtn.addEventListener('click', function () {
+          var v = input.value.trim();
+          if (!v) return;
+          items.push(v);
+          input.value = '';
+          renderList();
+        });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
+        });
+
+        inputRow.appendChild(input);
+        inputRow.appendChild(addBtn);
+        wrapper.appendChild(inputRow);
+        wrapper.appendChild(listEl);
+        renderList();
+
+        controller.getValue = function () { return items.slice(); };
+      } else if (field.fieldType === 'select' && !field.allowMultiple) {
+        var select = document.createElement('select');
+        var placeholderOpt = document.createElement('option');
+        placeholderOpt.value = ''; placeholderOpt.textContent = 'Select…';
+        select.appendChild(placeholderOpt);
+        (field.options || []).forEach(function (opt) {
+          var o = document.createElement('option');
+          o.value = opt.value; o.textContent = opt.label;
+          if (currentValue === opt.value) o.selected = true;
+          select.appendChild(o);
+        });
+        wrapper.appendChild(select);
+        controller.getValue = function () { return select.value; };
+      } else if (field.fieldType === 'radio' || field.fieldType === 'checkbox') {
+        var groupDiv = document.createElement('div');
+        groupDiv.className = 'field-option-group';
+        var inputType = field.allowMultiple ? 'checkbox' : 'radio';
+        var currentArr = Array.isArray(currentValue) ? currentValue : (currentValue ? [currentValue] : []);
+        (field.options || []).forEach(function (opt) {
+          var optLabel = document.createElement('label');
+          optLabel.className = 'field-option';
+          var inp = document.createElement('input');
+          inp.type = inputType;
+          inp.name = field.fieldKey;
+          inp.value = opt.value;
+          inp.checked = currentArr.indexOf(opt.value) > -1;
+          optLabel.appendChild(inp);
+          optLabel.appendChild(document.createTextNode(' ' + opt.label));
+          groupDiv.appendChild(optLabel);
+        });
+        wrapper.appendChild(groupDiv);
+        controller.getValue = function () {
+          var checked = Array.prototype.slice.call(groupDiv.querySelectorAll('input:checked')).map(function (i) { return i.value; });
+          return field.allowMultiple ? checked : (checked[0] || '');
+        };
+      } else if (field.fieldType === 'textarea') {
+        var ta = document.createElement('textarea');
+        ta.value = currentValue || '';
+        wrapper.appendChild(ta);
+        controller.getValue = function () { return ta.value.trim(); };
+      } else {
+        var inputEl = document.createElement('input');
+        inputEl.type = field.fieldType === 'number' ? 'number' : (field.fieldType === 'date' ? 'date' : 'text');
+        inputEl.value = currentValue || '';
+        wrapper.appendChild(inputEl);
+        controller.getValue = function () { return inputEl.value.trim(); };
+      }
+
+      return { controller: controller, element: wrapper };
+    }
+
+    async function renderFieldValues(app) {
+      var container = document.getElementById('fieldsContainer');
+
+      try {
+        var fields = await window.KiAspireAPI.getServiceFields(app.serviceId);
+
+        if (!fields.length) {
+          container.innerHTML = '<p class="cell-muted">This service has no configured fields.</p>';
+          currentFieldControllers = [];
+          return;
+        }
+
+        container.innerHTML = '';
+        currentFieldControllers = [];
+
+        fields.forEach(function (field) {
+          var currentValue = app.fieldValues ? app.fieldValues[field.fieldKey] : undefined;
+          var result = renderDynamicField(field, currentValue);
+          currentFieldControllers.push(result.controller);
+          container.appendChild(result.element);
+        });
+      } catch (error) {
+        console.error('Failed to load service fields:', error);
+        container.innerHTML = '<p class="cell-muted">Could not load this service\'s field definitions.</p>';
+      }
+    }
+
+    /* ---------- load + actions ---------- */
+
+    async function loadApplication() {
+      try {
+        var response = await window.KiAspireAPI.getAdminApplication(appId);
+        currentApplication = response.application;
+
+        pageTitle.textContent = currentApplication.userName + ' — ' + currentApplication.serviceName;
+        detailContent.style.display = '';
+
+        renderOverview(currentApplication, response.history || []);
+        await populateStageSelect(currentApplication.currentStageId);
+        await renderFieldValues(currentApplication);
+      } catch (error) {
+        console.error('getAdminApplication failed:', error);
+        pageTitle.textContent = 'Application not found';
+      }
+    }
+
+    closeReopenBtn.addEventListener('click', async function () {
+      if (!currentApplication) return;
+
+      var willClose = !currentApplication.isClosed;
+      var reason = '';
+
+      if (willClose) {
+        var input = prompt('Reason for closing this application (optional). Click Cancel to abort.');
+        if (input === null) return;
+        reason = input;
+      } else {
+        var confirmed = confirm('Reopen this application?');
+        if (!confirmed) return;
+      }
+
+      closeReopenBtn.disabled = true;
+
+      try {
+        await window.KiAspireAPI.updateAdminApplication(appId, {
+          isClosed: willClose,
+          closedReason: willClose ? reason : undefined
+        });
+
+        await loadApplication();
+      } catch (error) {
+        console.error('close/reopen failed:', error);
+        alert((error && error.message) || 'Could not update this application.');
+      } finally {
+        closeReopenBtn.disabled = false;
+      }
+    });
+
+    deleteAppBtn.addEventListener('click', async function () {
+      var confirmed = confirm('Delete this application permanently? This cannot be undone.');
+      if (!confirmed) return;
+
+      try {
+        await window.KiAspireAPI.deleteAdminApplication(appId);
+        window.location.href = 'applications.html';
+      } catch (error) {
+        console.error('deleteAdminApplication failed:', error);
+        alert((error && error.message) || 'Could not delete this application.');
+      }
+    });
+
+    document.getElementById('stageForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      var stageId = document.getElementById('stageSelect').value;
+      var note = document.getElementById('stageNote').value.trim();
+      var submitBtn = document.getElementById('stageSubmitBtn');
+      var statusEl = document.getElementById('stageFormStatus');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Updating…';
+      statusEl.className = 'form-status';
+
+      try {
+        await window.KiAspireAPI.updateAdminApplication(appId, { stageId: stageId, note: note });
+        document.getElementById('stageNote').value = '';
+        await loadApplication();
+
+        statusEl.className = 'form-status is-visible is-success';
+        statusEl.textContent = 'Stage updated.';
+      } catch (error) {
+        console.error('Stage update failed:', error);
+        statusEl.className = 'form-status is-visible is-error';
+        statusEl.textContent = (error && error.message) || 'Could not update the stage.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Stage';
+      }
+    });
+
+    document.getElementById('fieldsForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      var submitBtn = document.getElementById('fieldsSubmitBtn');
+      var statusEl = document.getElementById('fieldsFormStatus');
+
+      var fieldValues = {};
+      currentFieldControllers.forEach(function (controller) {
+        var value = controller.getValue();
+        var isEmpty = Array.isArray(value) ? value.length === 0 : !value;
+        if (!isEmpty) fieldValues[controller.fieldKey] = value;
+      });
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+      statusEl.className = 'form-status';
+
+      try {
+        await window.KiAspireAPI.updateAdminApplication(appId, { fieldValues: fieldValues });
+
+        statusEl.className = 'form-status is-visible is-success';
+        statusEl.textContent = 'Answers saved.';
+      } catch (error) {
+        console.error('Save answers failed:', error);
+        statusEl.className = 'form-status is-visible is-error';
+        statusEl.textContent = (error && error.message) || 'Could not save these answers.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Answers';
+      }
+    });
+
+    if (appId) {
+      loadApplication();
+    }
+  </script>
+
+</body>
+</html>

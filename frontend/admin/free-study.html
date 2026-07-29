@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Study Abroad for Free — KiAspire Aabroad Admin
+  </title>
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="../style.css"
+  >
+</head>
+
+<body class="admin-body">
+
+  <!-- Mobile bar -->
+  <div class="admin-mobile-bar">
+    <img
+      src="../Logo.webp"
+      alt="KiAspire Aabroad"
+    >
+
+    <button
+      class="admin-mobile-toggle"
+      id="adminMobileToggle"
+      type="button"
+      aria-label="Open menu"
+    >
+      ☰
+    </button>
+  </div>
+
+  <div
+    class="admin-sidebar-scrim"
+    id="adminSidebarScrim"
+  ></div>
+
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside
+      class="admin-sidebar"
+      id="adminSidebar"
+    >
+      <div class="admin-sidebar-logo">
+        <img
+          src="../Logo.webp"
+          alt="KiAspire Aabroad"
+          style="width: 100%; height: auto;"
+        >
+      </div>
+
+      <p class="admin-sidebar-tag">
+        Admin Panel
+      </p>
+
+      <nav class="admin-nav">
+
+        <a href="dashboard.html">
+          <span class="admin-nav-icon">◆</span>
+          Dashboard
+        </a>
+
+        <a href="users.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Users
+        </a>
+
+        <a href="services.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Services
+        </a>
+
+        <a href="stories.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Stories
+        </a>
+
+        <a href="applications.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Applications
+        </a>
+
+        <a
+          href="free-study.html"
+          class="is-active"
+        >
+          <span class="admin-nav-icon">◆</span>
+          Study Abroad for Free
+        </a>
+
+        <a href="site-settings.html">
+          <span class="admin-nav-icon">◆</span>
+          Site Settings
+        </a>
+
+        <a href="profile.html">
+          <span class="admin-nav-icon">◆</span>
+          My Profile
+        </a>
+
+      </nav>
+
+      <div class="admin-sidebar-footer">
+
+        <div class="admin-sidebar-admin">
+          <strong id="sidebarAdminName">
+            Admin
+          </strong>
+
+          Signed in
+        </div>
+
+        <button
+          class="admin-logout-btn"
+          type="button"
+          data-admin-logout
+        >
+          Log Out
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+
+      <div class="admin-topbar">
+
+        <div>
+          <p class="eyebrow admin-eyebrow">
+            Study Abroad for Free
+          </p>
+
+          <h1 class="admin-title">
+            Manage Countries
+          </h1>
+        </div>
+
+        <div class="admin-topbar-actions">
+          <button
+            type="button"
+            class="btn btn-dark"
+            id="addCountryBtn"
+          >
+            + Add Country
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Countries table -->
+      <div class="admin-card">
+
+        <div class="table-scroll">
+
+          <table class="admin-table">
+
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Country</th>
+                <th>Slug</th>
+                <th>Summary</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="countriesBody">
+              <tr>
+                <td
+                  colspan="6"
+                  class="cell-muted"
+                >
+                  Loading…
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+      </div>
+
+      <!-- Add/Edit modal -->
+      <div
+        class="modal-overlay"
+        id="countryModal"
+      >
+
+        <div class="modal-box">
+
+          <div class="modal-head">
+
+            <h2
+              class="modal-title"
+              id="countryModalTitle"
+            >
+              Add Country
+            </h2>
+
+            <button
+              type="button"
+              class="modal-close"
+              data-close-modal
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+
+          </div>
+
+          <div
+            class="form-status"
+            id="countryFormStatus"
+          ></div>
+
+          <form
+            id="countryForm"
+            novalidate
+          >
+
+            <input
+              type="hidden"
+              id="countryId"
+            >
+
+            <div
+              class="form-field"
+              id="wrapCountryName"
+            >
+              <label for="countryName">
+                Country name
+              </label>
+
+              <input
+                type="text"
+                id="countryName"
+                placeholder="e.g. Germany"
+                required
+              >
+
+              <span class="form-error">
+                Please enter a country name.
+              </span>
+            </div>
+
+            <div class="form-field">
+              <label for="countrySummary">
+                Short summary (shown on the list page)
+              </label>
+
+              <textarea
+                id="countrySummary"
+                placeholder="A one or two sentence teaser"
+              ></textarea>
+            </div>
+
+            <div class="form-field">
+              <label for="countryHeroImage">
+                Hero image URL (optional)
+              </label>
+
+              <input
+                type="text"
+                id="countryHeroImage"
+                placeholder="https://…"
+              >
+            </div>
+
+            <div
+              class="form-field"
+              id="wrapCountryContent"
+            >
+              <label for="countryContent">
+                Full write-up (Markdown)
+              </label>
+
+              <textarea
+                id="countryContent"
+                placeholder="## Tuition&#10;&#10;Public universities in..."
+                style="min-height: 220px; font-family: monospace; font-size: 13.5px;"
+              ></textarea>
+
+              <p class="form-help">
+                Written as Markdown (headings, bold, links, lists) — it's rendered and sanitized before it reaches the public page.
+              </p>
+            </div>
+
+            <div class="form-field">
+              <label class="field-option">
+                <input
+                  type="checkbox"
+                  id="countryIsPublished"
+                >
+                Published — visible on the public website
+              </label>
+            </div>
+
+            <div
+              class="form-field"
+              id="wrapCountrySortOrder"
+            >
+              <label for="countrySortOrder">
+                Sort order
+              </label>
+
+              <input
+                type="number"
+                id="countrySortOrder"
+                min="0"
+                step="1"
+                value="0"
+              >
+
+              <span class="form-error">
+                Sort order must be zero or greater.
+              </span>
+            </div>
+
+            <div class="modal-actions">
+
+              <button
+                type="button"
+                class="btn btn-outline"
+                data-close-modal
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-dark"
+                id="countrySubmitBtn"
+              >
+                Save Country
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../api.js"></script>
+  <script src="admin.js"></script>
+
+  <script>
+    'use strict';
+
+    var allCountries = [];
+
+    var tbody = document.getElementById('countriesBody');
+    var modal = document.getElementById('countryModal');
+    var form = document.getElementById('countryForm');
+    var modalTitle = document.getElementById('countryModalTitle');
+    var statusEl = document.getElementById('countryFormStatus');
+    var submitBtn = document.getElementById('countrySubmitBtn');
+
+    function escapeHtml(value) {
+      var div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+
+    function truncate(value, length) {
+      var text = value || '';
+      if (text.length <= length) return text;
+      return text.slice(0, length).trim() + '…';
+    }
+
+    function rowHtml(country) {
+      var active = country.isPublished === true;
+
+      return (
+        '<tr data-country-id="' + escapeHtml(country.id) + '">' +
+          '<td class="cell-muted">' + escapeHtml(country.sortOrder != null ? country.sortOrder : 0) + '</td>' +
+          '<td class="cell-primary">' + escapeHtml(country.countryName) + '</td>' +
+          '<td class="cell-muted">' + escapeHtml(country.countrySlug) + '</td>' +
+          '<td class="cell-muted">' + escapeHtml(truncate(country.summary || '', 60)) + '</td>' +
+          '<td><span class="status-badge is-' + (active ? 'active' : 'inactive') + '">' + (active ? 'Published' : 'Draft') + '</span></td>' +
+          '<td class="cell-actions">' +
+            '<button type="button" class="table-action" data-edit-country="' + escapeHtml(country.id) + '">Edit</button>' +
+            '<button type="button" class="table-action is-danger" data-delete-country="' + escapeHtml(country.id) + '">Delete</button>' +
+          '</td>' +
+        '</tr>'
+      );
+    }
+
+    function render(countries) {
+      if (!countries.length) {
+        tbody.innerHTML =
+          '<tr><td colspan="6"><div class="empty-state">' +
+            '<p class="empty-state-title">No countries yet</p>' +
+            '<p>Click "Add Country" to publish the first one.</p>' +
+          '</div></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = countries.map(rowHtml).join('');
+    }
+
+    async function loadCountries() {
+      try {
+        var countries = await window.KiAspireAPI.getAdminFreeStudyCountries();
+        allCountries = countries;
+        render(allCountries);
+      } catch (error) {
+        console.error('getAdminFreeStudyCountries failed:', error);
+
+        tbody.innerHTML =
+          '<tr><td colspan="6"><div class="empty-state">' +
+            '<p class="empty-state-title">Couldn\'t load countries</p>' +
+            '<p>' + escapeHtml((error && error.message) || 'Please refresh the page.') + '</p>' +
+          '</div></td></tr>';
+      }
+    }
+
+    function clearErrors() {
+      ['wrapCountryName', 'wrapCountryContent', 'wrapCountrySortOrder'].forEach(function (id) {
+        document.getElementById(id).classList.remove('has-error');
+      });
+    }
+
+    function openModal(country) {
+      form.reset();
+      statusEl.className = 'form-status';
+      statusEl.textContent = '';
+      clearErrors();
+
+      if (country) {
+        modalTitle.textContent = 'Edit Country';
+        document.getElementById('countryId').value = country.id;
+        document.getElementById('countryName').value = country.countryName || '';
+        document.getElementById('countrySummary').value = country.summary || '';
+        document.getElementById('countryHeroImage').value = country.heroImageUrl || '';
+        document.getElementById('countryContent').value = country.contentMarkdown || '';
+        document.getElementById('countryIsPublished').checked = !!country.isPublished;
+        document.getElementById('countrySortOrder').value = country.sortOrder != null ? country.sortOrder : 0;
+      } else {
+        modalTitle.textContent = 'Add Country';
+        document.getElementById('countryId').value = '';
+        document.getElementById('countrySortOrder').value = 0;
+      }
+
+      modal.classList.add('is-open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+    }
+
+    document.getElementById('addCountryBtn').addEventListener('click', function () {
+      openModal(null);
+    });
+
+    modal.querySelectorAll('[data-close-modal]').forEach(function (button) {
+      button.addEventListener('click', closeModal);
+    });
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+
+    tbody.addEventListener('click', async function (event) {
+      var editButton = event.target.closest('[data-edit-country]');
+
+      if (editButton) {
+        var editId = editButton.getAttribute('data-edit-country');
+
+        var country = allCountries.filter(function (c) {
+          return String(c.id) === String(editId);
+        })[0];
+
+        if (!country) {
+          alert('Country information could not be found. Refresh the page and try again.');
+          return;
+        }
+
+        openModal(country);
+        return;
+      }
+
+      var deleteButton = event.target.closest('[data-delete-country]');
+
+      if (deleteButton) {
+        var deleteId = deleteButton.getAttribute('data-delete-country');
+
+        var confirmed = confirm('Delete this country permanently? This action cannot be undone.');
+        if (!confirmed) return;
+
+        deleteButton.disabled = true;
+
+        try {
+          await window.KiAspireAPI.deleteFreeStudyCountry(deleteId);
+          allCountries = allCountries.filter(function (c) {
+            return String(c.id) !== String(deleteId);
+          });
+          render(allCountries);
+        } catch (error) {
+          console.error('deleteFreeStudyCountry failed:', error);
+          alert((error && error.message) || 'Could not delete this country.');
+          deleteButton.disabled = false;
+        }
+      }
+    });
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      clearErrors();
+
+      var countryId = document.getElementById('countryId').value;
+      var isEditing = Boolean(countryId);
+
+      var countryName = document.getElementById('countryName').value.trim();
+      var summary = document.getElementById('countrySummary').value.trim();
+      var heroImageUrl = document.getElementById('countryHeroImage').value.trim();
+      var contentMarkdown = document.getElementById('countryContent').value;
+      var isPublished = document.getElementById('countryIsPublished').checked;
+      var sortOrderValue = document.getElementById('countrySortOrder').value.trim();
+
+      var isValid = true;
+
+      document.getElementById('wrapCountryName').classList.toggle('has-error', !countryName);
+      if (!countryName) isValid = false;
+
+      var parsedSortOrder = Number(sortOrderValue);
+      var sortOrderInvalid = sortOrderValue === '' || !Number.isFinite(parsedSortOrder) || parsedSortOrder < 0;
+      document.getElementById('wrapCountrySortOrder').classList.toggle('has-error', sortOrderInvalid);
+      if (sortOrderInvalid) isValid = false;
+
+      if (!isValid) return;
+
+      var payload = {
+        countryName: countryName,
+        summary: summary,
+        heroImageUrl: heroImageUrl,
+        contentMarkdown: contentMarkdown,
+        isPublished: isPublished,
+        sortOrder: parsedSortOrder
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = isEditing ? 'Updating…' : 'Creating…';
+      statusEl.className = 'form-status';
+      statusEl.textContent = '';
+
+      try {
+        if (isEditing) {
+          await window.KiAspireAPI.updateFreeStudyCountry(countryId, payload);
+        } else {
+          await window.KiAspireAPI.createFreeStudyCountry(payload);
+        }
+
+        closeModal();
+        await loadCountries();
+      } catch (error) {
+        console.error('Save country failed:', error);
+        statusEl.className = 'form-status is-visible is-error';
+        statusEl.textContent = (error && error.message) || 'Could not save this country. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Country';
+      }
+    });
+
+    loadCountries();
+  </script>
+
+</body>
+</html>

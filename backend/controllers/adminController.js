@@ -1,8 +1,10 @@
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
-const User = require("../models/userModel");
+const userModel = require("../models/userModel");
 const generateToken = require("../utils/token");
+const { rowToCamel, rowsToCamel } = require("../utils/caseConvert");
+const { setAuthCookie, clearAuthCookie } = require("../utils/authCookie");
 
 // Admin login
 // POST /api/admin/login
@@ -26,11 +28,7 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    // Password has select:false in the schema
-    const admin = await User.findOne({
-      email,
-      role: "admin",
-    }).select("+password");
+    const admin = await userModel.findByEmailAndRole(email, "admin");
 
     if (!admin) {
       return res.status(401).json({
@@ -39,17 +37,14 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    if (!admin.isActive) {
+    if (!admin.is_active) {
       return res.status(403).json({
         success: false,
         message: "Your admin account is inactive",
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      admin.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, admin.password_hash);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
@@ -58,25 +53,16 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    admin.lastLogin = new Date();
-    await admin.save();
+    const updatedAdmin = await userModel.updateLastLogin(admin.id);
 
-    // FIX: previously called as generateToken(admin._id) — the role
-    // claim was silently missing from every token. Now passes both.
-    const token = generateToken(admin._id, admin.role);
+    const token = generateToken(updatedAdmin.id, updatedAdmin.role);
+    setAuthCookie(req, res, "admin_token", token);
 
     return res.status(200).json({
       success: true,
       message: "Admin login successful",
       token,
-      admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        phone: admin.phone,
-        role: admin.role,
-        lastLogin: admin.lastLogin,
-      },
+      admin: rowToCamel(userModel.toPublicUser(updatedAdmin)),
     });
   } catch (error) {
     console.error("Admin login error:", error.message);
@@ -88,17 +74,24 @@ const adminLogin = async (req, res) => {
   }
 };
 
+// POST /api/admin/logout
+// Clears the httpOnly page-guard cookie set on login. The bearer token
+// itself can't be revoked server-side (stateless JWT) — the frontend also
+// drops it from localStorage; this only needs to handle the cookie half.
+const logoutAdmin = (req, res) => {
+  clearAuthCookie(res, "admin_token");
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+};
+
 // Get logged-in admin profile
 // GET /api/admin/profile
 const getAdminProfile = async (req, res) => {
   try {
-    // FIX: password is now select:false on the schema (and stripped again
-    // by the toJSON transform as a second safety net), so this no longer
-    // leaks the password hash to the client.
-    const admin = await User.findOne({
-      _id: req.user._id,
-      role: "admin",
-    });
+    const admin = await userModel.findByIdAndRole(req.user.id, "admin");
 
     if (!admin) {
       return res.status(404).json({
@@ -109,7 +102,7 @@ const getAdminProfile = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      admin,
+      admin: rowToCamel(userModel.toPublicUser(admin)),
     });
   } catch (error) {
     console.error("Get admin profile error:", error.message);
@@ -121,20 +114,16 @@ const getAdminProfile = async (req, res) => {
   }
 };
 
-// Get all normal users
+// Get all students
 // GET /api/admin/users
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({
-      role: "user",
-    }).sort({
-      createdAt: -1,
-    });
+    const users = await userModel.listByRole("student");
 
     return res.status(200).json({
       success: true,
       count: users.length,
-      users,
+      users: rowsToCamel(users.map(userModel.toPublicUser)),
     });
   } catch (error) {
     console.error("Get all users error:", error.message);
@@ -146,14 +135,11 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Get a single user
+// Get a single student
 // GET /api/admin/users/:id
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findOne({
-      _id: req.params.id,
-      role: "user",
-    });
+    const user = await userModel.findByIdAndRole(req.params.id, "student");
 
     if (!user) {
       return res.status(404).json({
@@ -164,12 +150,12 @@ const getUserById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      user,
+      user: rowToCamel(userModel.toPublicUser(user)),
     });
   } catch (error) {
     console.error("Get user error:", error.message);
 
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid user ID",
@@ -183,7 +169,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Activate or deactivate user
+// Activate or deactivate a student
 // PATCH /api/admin/users/:id/status
 const updateUserStatus = async (req, res) => {
   try {
@@ -196,19 +182,7 @@ const updateUserStatus = async (req, res) => {
       });
     }
 
-    const user = await User.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        role: "user",
-      },
-      {
-        isActive,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const user = await userModel.updateIsActive(req.params.id, "student", isActive);
 
     if (!user) {
       return res.status(404).json({
@@ -219,15 +193,13 @@ const updateUserStatus = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `User ${
-        isActive ? "activated" : "deactivated"
-      } successfully`,
-      user,
+      message: `User ${isActive ? "activated" : "deactivated"} successfully`,
+      user: rowToCamel(userModel.toPublicUser(user)),
     });
   } catch (error) {
     console.error("Update user status error:", error.message);
 
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid user ID",
@@ -241,16 +213,13 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
-// Delete a user
+// Delete a student
 // DELETE /api/admin/users/:id
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findOneAndDelete({
-      _id: req.params.id,
-      role: "user",
-    });
+    const deletedCount = await userModel.deleteByIdAndRole(req.params.id, "student");
 
-    if (!user) {
+    if (!deletedCount) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -264,7 +233,7 @@ const deleteUser = async (req, res) => {
   } catch (error) {
     console.error("Delete user error:", error.message);
 
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid user ID",
@@ -280,6 +249,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   adminLogin,
+  logoutAdmin,
   getAdminProfile,
   getAllUsers,
   getUserById,

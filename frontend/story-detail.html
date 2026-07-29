@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Story — Ki Aspire Abroad</title>
-<meta name="description" content="A student story from Ki Aspire Abroad.">
+<title>Student Story — KiAspire Aabroad</title>
+<meta name="description" content="A student story from KiAspire Aabroad.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,18 +15,20 @@
 <div class="progress-bar" id="progressBar"></div>
 
 <nav class="nav" id="nav">
-  <a class="nav-mark" href="index.html" aria-label="Ki Aspire Abroad — home">
+  <a class="nav-mark" href="index.html" aria-label="KiAspire Aabroad — home">
     <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
   </a>
   <div class="nav-links">
     <a href="about.html">About</a>
     <a href="services.html">Services</a>
+    <a href="study-abroad-for-free.html">Study Free</a>
     <a href="index.html#destinations">Destinations</a>
     <a href="stories.html">Stories</a>
     <a href="register.html">Get Started</a>
+    <a href="login.html">Log In</a>
   </div>
   <div class="nav-cta">
-    <a href="register.html" class="btn btn-dark">Book a Consultation</a>
+    <a href="register.html?service=book-a-consultation" class="btn btn-dark">Book a Consultation</a>
     <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span>
     </button>
@@ -36,14 +38,16 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="about.html">About</a>
   <a href="services.html">Services</a>
+  <a href="study-abroad-for-free.html">Study Free</a>
   <a href="index.html#destinations">Destinations</a>
   <a href="stories.html">Stories</a>
+  <a href="login.html">Log In</a>
   <a href="register.html" class="mobile-menu-cta">Get Started</a>
 </div>
 
 <header class="page-hero">
   <div class="container">
-    <a href="stories.html" class="hero-breadcrumb reveal is-visible" style="color:rgba(46,42,34,0.62);"><span class="hero-breadcrumb-arrow" aria-hidden="true">←</span> All Stories</a>
+    <a href="stories.html" class="hero-breadcrumb reveal is-visible"><span class="hero-breadcrumb-arrow" aria-hidden="true">←</span> All Stories</a>
     <p class="eyebrow eyebrow--light reveal is-visible" id="storyEyebrow" style="--d:0">Success Story</p>
     <h1 class="page-hero-title reveal is-visible" id="storyTitle" style="--d:1">Loading story…</h1>
     <div class="story-detail-meta" id="storyMeta"></div>
@@ -67,10 +71,10 @@
       <p class="cta-copy reveal" style="--d:2">Thirty minutes, no obligation. Let's find out what your version of this looks like.</p>
     </div>
     <div class="cta-actions reveal" style="--d:3">
-      <a href="register.html" class="btn btn-light">Book a Private Consultation</a>
+      <a href="register.html?service=book-a-consultation" class="btn btn-light">Book a Private Consultation</a>
       <div class="cta-contact">
-        <span>hello@kiaspireabroad.com</span>
-        <span>+91 80 4567 1234</span>
+        <span><a href="https://kiaspireaabroad.com/">hello@kiaspireAabroad</a></span>
+        <a href="tel:+919831631352">9831631352</a>
       </div>
     </div>
   </div>
@@ -82,19 +86,20 @@
       <div class="nav-mark footer-mark">
         <span class="nav-mark-text"><img src="Logo.webp" alt="Logo" class="mark-icon"></span>
       </div>
-      <p class="footer-tagline">Independent study abroad counselling headquartered in Kolkata, working with students across India.</p>
+      <p class="footer-tagline">Independent study Aabroad counselling headquartered in Kolkata, working with students across India.</p>
       <p class="footer-dpa">Dream <span>·</span> Plan <span>·</span> Achieve</p>
     </div>
     <div class="footer-col">
       <p class="footer-heading">Explore</p>
       <a href="about.html">About</a>
       <a href="services.html">Services</a>
+      <a href="study-abroad-for-free.html">Study Abroad for Free</a>
       <a href="index.html#destinations">Destinations</a>
       <a href="stories.html">Stories</a>
     </div>
     <div class="footer-col">
       <p class="footer-heading">Contact</p>
-      <a href="mailto:hello@kiaspireabroad.com">hello@kiaspireabroad.com</a>
+      <a href="mailto:hello@kiaspireAabroad.com">hello@kiaspireAabroad.com</a>
       <a href="tel:+918981572430">+91 89815 72430</a>
       <span>Kolkata, India</span>
     </div>
@@ -105,7 +110,7 @@
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© <span id="year"></span> Ki Aspire Abroad. All rights reserved.</span>
+    <span>© <span id="year"></span> KiAspire Aabroad. All rights reserved.</span>
     <span>Designed for ambitious students.</span>
   </div>
 </footer>
@@ -158,9 +163,9 @@
   }
 
   function renderStory(story){
-    document.title = (story.studentName || 'Student Story') + ' \u2014 Ki Aspire Abroad';
+    document.title = (story.studentName || 'Student Story') + ' \u2014 KiAspire Aabroad';
     eyebrowEl.textContent = 'Success Story';
-    titleEl.innerHTML = escapeHtml(story.studentName || 'A Ki Aspire Abroad Student') +
+    titleEl.innerHTML = escapeHtml(story.studentName || 'A KiAspire Aabroad Student') +
       (story.university ? ' <em>\u2014 now at ' + escapeHtml(story.university) + '</em>' : '');
 
     metaEl.innerHTML =

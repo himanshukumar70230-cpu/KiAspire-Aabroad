@@ -1,4 +1,5 @@
-const Service = require("../models/serviceModel");
+const serviceModel = require("../models/serviceModel");
+const { rowToCamel, rowsToCamel } = require("../utils/caseConvert");
 
 const createSlug = (name) => {
   return name
@@ -13,7 +14,7 @@ const createSlug = (name) => {
 // Admin only
 const createService = async (req, res) => {
   try {
-    let { name, description, icon, sortOrder } = req.body;
+    let { name, description, icon, sortOrder, kind, redirectUrl } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({
@@ -22,12 +23,19 @@ const createService = async (req, res) => {
       });
     }
 
+    const resolvedKind = kind === "external_redirect" ? "external_redirect" : "form";
+
+    if (resolvedKind === "external_redirect" && !redirectUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "redirectUrl is required when kind is external_redirect",
+      });
+    }
+
     name = name.trim();
     const slug = createSlug(name);
 
-    const existingService = await Service.findOne({
-      $or: [{ name }, { slug }],
-    });
+    const existingService = await serviceModel.findByNameOrSlug(name, slug);
 
     if (existingService) {
       return res.status(409).json({
@@ -36,24 +44,25 @@ const createService = async (req, res) => {
       });
     }
 
-    const service = await Service.create({
+    const service = await serviceModel.create({
       name,
       slug,
       description: description?.trim() || "",
       icon: icon?.trim() || "",
-      sortOrder: Number(sortOrder) || 0,
-      createdBy: req.user._id,
+      kind: resolvedKind,
+      redirect_url: resolvedKind === "external_redirect" ? redirectUrl.trim() : null,
+      sort_order: Number(sortOrder) || 0,
     });
 
     return res.status(201).json({
       success: true,
       message: "Service created successfully",
-      service,
+      service: rowToCamel(service),
     });
   } catch (error) {
     console.error("Create service error:", error.message);
 
-    if (error.code === 11000) {
+    if (error.code === "23505") {
       return res.status(409).json({
         success: false,
         message: "Service already exists",
@@ -71,14 +80,12 @@ const createService = async (req, res) => {
 // Public
 const getAllServices = async (req, res) => {
   try {
-    const services = await Service.find({ isActive: true })
-      .sort({ sortOrder: 1, createdAt: 1 })
-      .select("-createdBy");
+    const services = await serviceModel.findActive();
 
     return res.status(200).json({
       success: true,
       count: services.length,
-      services,
+      services: rowsToCamel(services),
     });
   } catch (error) {
     console.error("Get services error:", error.message);
@@ -94,14 +101,12 @@ const getAllServices = async (req, res) => {
 // Admin only
 const getAllServicesForAdmin = async (req, res) => {
   try {
-    const services = await Service.find()
-      .populate("createdBy", "name email")
-      .sort({ sortOrder: 1, createdAt: 1 });
+    const services = await serviceModel.findAll();
 
     return res.status(200).json({
       success: true,
       count: services.length,
-      services,
+      services: rowsToCamel(services),
     });
   } catch (error) {
     console.error("Get admin services error:", error.message);
@@ -117,7 +122,8 @@ const getAllServicesForAdmin = async (req, res) => {
 // Admin only
 const updateService = async (req, res) => {
   try {
-    const { name, description, icon, isActive, sortOrder } = req.body;
+    const { name, description, icon, isActive, sortOrder, kind, redirectUrl } =
+      req.body;
 
     const updateData = {};
 
@@ -142,12 +148,9 @@ const updateService = async (req, res) => {
     }
 
     if (typeof isActive === "boolean") {
-      updateData.isActive = isActive;
+      updateData.is_active = isActive;
     }
 
-    // FIX: previously "Number(sortOrder)" with no validation could write
-    // NaN into the document if a non-numeric value was sent. Now it's
-    // validated before being included in the update.
     if (sortOrder !== undefined) {
       const parsedSortOrder = Number(sortOrder);
 
@@ -158,17 +161,32 @@ const updateService = async (req, res) => {
         });
       }
 
-      updateData.sortOrder = parsedSortOrder;
+      updateData.sort_order = parsedSortOrder;
     }
 
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
+    if (kind !== undefined) {
+      if (!["form", "external_redirect"].includes(kind)) {
+        return res.status(400).json({
+          success: false,
+          message: "kind must be 'form' or 'external_redirect'",
+        });
       }
-    );
+
+      updateData.kind = kind;
+
+      if (kind === "external_redirect" && !redirectUrl) {
+        return res.status(400).json({
+          success: false,
+          message: "redirectUrl is required when kind is external_redirect",
+        });
+      }
+
+      updateData.redirect_url = kind === "external_redirect" ? redirectUrl.trim() : null;
+    } else if (redirectUrl !== undefined) {
+      updateData.redirect_url = redirectUrl ? redirectUrl.trim() : null;
+    }
+
+    const service = await serviceModel.update(req.params.id, updateData);
 
     if (!service) {
       return res.status(404).json({
@@ -180,19 +198,19 @@ const updateService = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Service updated successfully",
-      service,
+      service: rowToCamel(service),
     });
   } catch (error) {
     console.error("Update service error:", error.message);
 
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid service ID",
       });
     }
 
-    if (error.code === 11000) {
+    if (error.code === "23505") {
       return res.status(409).json({
         success: false,
         message: "Another service already uses this name",
@@ -210,9 +228,9 @@ const updateService = async (req, res) => {
 // Admin only
 const deleteService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndDelete(req.params.id);
+    const deletedCount = await serviceModel.deleteById(req.params.id);
 
-    if (!service) {
+    if (!deletedCount) {
       return res.status(404).json({
         success: false,
         message: "Service not found",
@@ -226,7 +244,7 @@ const deleteService = async (req, res) => {
   } catch (error) {
     console.error("Delete service error:", error.message);
 
-    if (error.name === "CastError") {
+    if (error.code === "22P02") {
       return res.status(400).json({
         success: false,
         message: "Invalid service ID",

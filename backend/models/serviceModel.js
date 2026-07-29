@@ -1,54 +1,49 @@
-const mongoose = require("mongoose");
+const db = require("../db/knex");
 
-const serviceSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Service name is required"],
-      unique: true,
-      trim: true,
-    },
+const TABLE = "services";
 
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
+function findActive() {
+  return db(TABLE)
+    .where({ is_active: true })
+    .orderBy([{ column: "sort_order" }, { column: "created_at" }]);
+}
 
-    description: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+function findAll() {
+  return db(TABLE).orderBy([{ column: "sort_order" }, { column: "created_at" }]);
+}
 
-    icon: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+function findById(id) {
+  return db(TABLE).where({ id }).first();
+}
 
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+function findByNameOrSlug(name, slug) {
+  return db(TABLE).where({ name }).orWhere({ slug }).first();
+}
 
-    sortOrder: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+async function create(data) {
+  const [row] = await db(TABLE).insert(data).returning("*");
+  return row;
+}
 
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+async function update(id, data) {
+  const [row] = await db(TABLE)
+    .where({ id })
+    .update({ ...data, updated_at: db.fn.now() })
+    .returning("*");
 
-module.exports = mongoose.model("Service", serviceSchema);
+  return row;
+}
+
+function deleteById(id) {
+  return db(TABLE).where({ id }).del();
+}
+
+module.exports = {
+  findActive,
+  findAll,
+  findById,
+  findByNameOrSlug,
+  create,
+  update,
+  deleteById,
+};

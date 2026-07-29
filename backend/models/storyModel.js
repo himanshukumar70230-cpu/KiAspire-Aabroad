@@ -1,77 +1,39 @@
-const mongoose = require("mongoose");
+const db = require("../db/knex");
 
-const storySchema = new mongoose.Schema(
-  {
-    studentName: {
-      type: String,
-      required: [true, "Student name is required"],
-      trim: true,
-    },
+const TABLE = "stories";
 
-    country: {
-      type: String,
-      required: [true, "Country is required"],
-      trim: true,
-    },
+function findActive() {
+  return db(TABLE)
+    .where({ is_active: true })
+    .orderBy([{ column: "sort_order" }, { column: "created_at", order: "desc" }]);
+}
 
-    university: {
-      type: String,
-      required: [true, "University name is required"],
-      trim: true,
-    },
+function findById(id) {
+  return db(TABLE).where({ id }).first();
+}
 
-    course: {
-      type: String,
-      required: [true, "Course name is required"],
-      trim: true,
-    },
+async function create(data) {
+  const [row] = await db(TABLE).insert(data).returning("*");
+  return row;
+}
 
-    title: {
-      type: String,
-      required: [true, "Story title is required"],
-      trim: true,
-    },
+async function update(id, data) {
+  const [row] = await db(TABLE)
+    .where({ id })
+    .update({ ...data, updated_at: db.fn.now() })
+    .returning("*");
 
-    description: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+  return row;
+}
 
-    youtubeUrl: {
-      type: String,
-      required: [true, "YouTube URL is required"],
-      trim: true,
-    },
+function deleteById(id) {
+  return db(TABLE).where({ id }).del();
+}
 
-    thumbnail: {
-      type: String,
-      default: "",
-    },
-
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
-
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-
-    sortOrder: {
-      type: Number,
-      default: 0,
-    },
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-module.exports = mongoose.model("Story", storySchema);
+module.exports = {
+  findActive,
+  findById,
+  create,
+  update,
+  deleteById,
+};

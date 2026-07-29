@@ -1,0 +1,987 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Manage Service Fields — KiAspire Aabroad Admin
+  </title>
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Archivo:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="../style.css"
+  >
+</head>
+
+<body class="admin-body">
+
+  <!-- Mobile top bar -->
+  <div class="admin-mobile-bar">
+    <img
+      src="../Logo.webp"
+      alt="KiAspire Aabroad"
+    >
+
+    <button
+      class="admin-mobile-toggle"
+      id="adminMobileToggle"
+      type="button"
+      aria-label="Open menu"
+    >
+      ☰
+    </button>
+  </div>
+
+  <div
+    class="admin-sidebar-scrim"
+    id="adminSidebarScrim"
+  ></div>
+
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside
+      class="admin-sidebar"
+      id="adminSidebar"
+    >
+      <div class="admin-sidebar-logo">
+        <img
+          src="../Logo.webp"
+          alt="KiAspire Aabroad"
+          style="width: 100%; height: auto;"
+        >
+      </div>
+
+      <p class="admin-sidebar-tag">
+        Admin Panel
+      </p>
+
+      <nav class="admin-nav">
+
+        <a href="dashboard.html">
+          <span class="admin-nav-icon">◆</span>
+          Dashboard
+        </a>
+
+        <a href="users.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Users
+        </a>
+
+        <a
+          href="services.html"
+          class="is-active"
+        >
+          <span class="admin-nav-icon">◆</span>
+          Manage Services
+        </a>
+
+        <a href="stories.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Stories
+        </a>
+
+        <a href="applications.html">
+          <span class="admin-nav-icon">◆</span>
+          Manage Applications
+        </a>
+
+        <a href="free-study.html">
+          <span class="admin-nav-icon">◆</span>
+          Study Abroad for Free
+        </a>
+
+        <a href="site-settings.html">
+          <span class="admin-nav-icon">◆</span>
+          Site Settings
+        </a>
+
+        <a href="profile.html">
+          <span class="admin-nav-icon">◆</span>
+          My Profile
+        </a>
+
+      </nav>
+
+      <div class="admin-sidebar-footer">
+
+        <div class="admin-sidebar-admin">
+          <strong id="sidebarAdminName">
+            Admin
+          </strong>
+
+          Signed in
+        </div>
+
+        <button
+          class="admin-logout-btn"
+          type="button"
+          data-admin-logout
+        >
+          Log Out
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+
+      <a
+        href="services.html"
+        class="table-action"
+        style="display: inline-block; margin-bottom: 18px;"
+      >
+        ← Back to Services
+      </a>
+
+      <div class="admin-topbar">
+
+        <div>
+          <p class="eyebrow admin-eyebrow">
+            Service Fields
+          </p>
+
+          <h1
+            class="admin-title"
+            id="pageTitle"
+          >
+            Loading…
+          </h1>
+        </div>
+
+        <div class="admin-topbar-actions">
+          <button
+            type="button"
+            class="btn btn-dark"
+            id="addFieldBtn"
+            disabled
+          >
+            + Add Field
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Fields table -->
+      <div class="admin-card">
+
+        <div class="table-scroll">
+
+          <table class="admin-table">
+
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Key</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Options</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="fieldsBody">
+              <tr>
+                <td
+                  colspan="7"
+                  class="cell-muted"
+                >
+                  Loading…
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+      </div>
+
+      <!-- Add/Edit modal -->
+      <div
+        class="modal-overlay"
+        id="fieldModal"
+      >
+
+        <div class="modal-box">
+
+          <div class="modal-head">
+
+            <h2
+              class="modal-title"
+              id="fieldModalTitle"
+            >
+              Add Field
+            </h2>
+
+            <button
+              type="button"
+              class="modal-close"
+              data-close-modal
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+
+          </div>
+
+          <div
+            class="form-status"
+            id="fieldFormStatus"
+          ></div>
+
+          <form
+            id="fieldForm"
+            novalidate
+          >
+
+            <input
+              type="hidden"
+              id="fieldRecordId"
+            >
+
+            <!-- Field key -->
+            <div
+              class="form-field"
+              id="wrapFieldKey"
+            >
+              <label for="fieldKey">
+                Field key
+              </label>
+
+              <input
+                type="text"
+                id="fieldKey"
+                placeholder="e.g. destination_country"
+                required
+              >
+
+              <p class="form-help">
+                Lowercase letters, numbers and underscores only. Can't be changed after the field is created — it's what submitted answers are stored under.
+              </p>
+
+              <span class="form-error">
+                Lowercase letters, numbers and underscores, starting with a letter.
+              </span>
+            </div>
+
+            <!-- Label -->
+            <div
+              class="form-field"
+              id="wrapFieldLabel"
+            >
+              <label for="fieldLabel">
+                Label shown to students
+              </label>
+
+              <input
+                type="text"
+                id="fieldLabel"
+                placeholder="e.g. Destination Country"
+                required
+              >
+
+              <span class="form-error">
+                Please enter a label.
+              </span>
+            </div>
+
+            <!-- Field type -->
+            <div class="form-field">
+              <label for="fieldType">
+                Field type
+              </label>
+
+              <select id="fieldType">
+                <option value="text">Text</option>
+                <option value="textarea">Textarea</option>
+                <option value="number">Number</option>
+                <option value="date">Date</option>
+                <option value="select">Select (single choice)</option>
+                <option value="radio">Radio (single choice)</option>
+                <option value="checkbox">Checkbox (multi-choice)</option>
+              </select>
+            </div>
+
+            <!-- Options (select / radio / checkbox only) -->
+            <div
+              class="form-field"
+              id="wrapFieldOptions"
+              style="display: none;"
+            >
+              <label>
+                Options
+              </label>
+
+              <div id="optionsList"></div>
+
+              <button
+                type="button"
+                class="btn btn-outline"
+                id="addOptionBtn"
+                style="margin-top: 8px;"
+              >
+                + Add Option
+              </button>
+
+              <span class="form-error">
+                Add at least one option, each with a label and a value.
+              </span>
+            </div>
+
+            <!-- Allow multiple / ordered -->
+            <div class="form-field">
+              <label class="field-option">
+                <input
+                  type="checkbox"
+                  id="fieldAllowMultiple"
+                >
+                Allow multiple values
+              </label>
+
+              <label class="field-option">
+                <input
+                  type="checkbox"
+                  id="fieldIsOrdered"
+                >
+                Student can rank/reorder their answers
+              </label>
+
+              <p class="form-help">
+                "Rank/reorder" only makes sense combined with "Allow multiple values" — e.g. a ranked list of preferred universities.
+              </p>
+            </div>
+
+            <!-- Required -->
+            <div class="form-field">
+              <label class="field-option">
+                <input
+                  type="checkbox"
+                  id="fieldIsRequired"
+                >
+                This field is required
+              </label>
+            </div>
+
+            <!-- Placeholder -->
+            <div class="form-field">
+              <label for="fieldPlaceholder">
+                Placeholder (optional)
+              </label>
+
+              <input
+                type="text"
+                id="fieldPlaceholder"
+                placeholder="Shown inside an empty input"
+              >
+            </div>
+
+            <!-- Help text -->
+            <div class="form-field">
+              <label for="fieldHelpText">
+                Help text (optional)
+              </label>
+
+              <input
+                type="text"
+                id="fieldHelpText"
+                placeholder="Shown under the field"
+              >
+            </div>
+
+            <!-- Sort order -->
+            <div
+              class="form-field"
+              id="wrapFieldSortOrder"
+            >
+              <label for="fieldSortOrder">
+                Sort order
+              </label>
+
+              <input
+                type="number"
+                id="fieldSortOrder"
+                min="0"
+                step="1"
+                value="0"
+              >
+
+              <span class="form-error">
+                Sort order must be zero or greater.
+              </span>
+            </div>
+
+            <div class="modal-actions">
+
+              <button
+                type="button"
+                class="btn btn-outline"
+                data-close-modal
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-dark"
+                id="fieldSubmitBtn"
+              >
+                Save Field
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../api.js"></script>
+  <script src="admin.js"></script>
+
+  <script>
+    'use strict';
+
+    var params = new URLSearchParams(window.location.search);
+    var serviceId = params.get('serviceId');
+
+    var allFields = [];
+
+    var pageTitle =
+      document.getElementById('pageTitle');
+
+    var addFieldBtn =
+      document.getElementById('addFieldBtn');
+
+    var tbody =
+      document.getElementById('fieldsBody');
+
+    var modal =
+      document.getElementById('fieldModal');
+
+    var form =
+      document.getElementById('fieldForm');
+
+    var modalTitle =
+      document.getElementById('fieldModalTitle');
+
+    var statusEl =
+      document.getElementById('fieldFormStatus');
+
+    var submitBtn =
+      document.getElementById('fieldSubmitBtn');
+
+    var optionsList =
+      document.getElementById('optionsList');
+
+    var wrapFieldOptions =
+      document.getElementById('wrapFieldOptions');
+
+    var fieldTypeSelect =
+      document.getElementById('fieldType');
+
+    var OPTION_TYPES = ['select', 'radio', 'checkbox'];
+
+    /*
+      Escapes values before inserting them
+      into generated HTML.
+    */
+    function escapeHtml(value) {
+      var div = document.createElement('div');
+
+      div.textContent =
+        value == null ? '' : String(value);
+
+      return div.innerHTML;
+    }
+
+    function truncate(value, length) {
+      var text = value || '';
+
+      if (text.length <= length) {
+        return text;
+      }
+
+      return (
+        text
+          .slice(0, length)
+          .trim() + '…'
+      );
+    }
+
+    /*
+      No serviceId in the URL — nothing to manage.
+    */
+    if (!serviceId) {
+      pageTitle.textContent = 'No service selected';
+
+      tbody.innerHTML =
+        '<tr>' +
+          '<td colspan="7">' +
+            '<div class="empty-state">' +
+              '<p class="empty-state-title">' +
+                'No service selected' +
+              '</p>' +
+              '<p>' +
+                'Go back to <a href="services.html" style="color:var(--blue-deep); font-weight:600;">Manage Services</a> and choose a service to edit its fields from there.' +
+              '</p>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+    }
+
+    /*
+      Options editor — one row per option, each with a
+      label input and a value input. Read back into a
+      plain array of {label, value} at submit time.
+    */
+    function addOptionRow(label, value) {
+      var row = document.createElement('div');
+
+      row.className = 'form-row';
+      row.style.marginBottom = '10px';
+
+      row.innerHTML =
+        '<input type="text" class="option-label" placeholder="Label shown to students">' +
+        '<div style="display:flex; gap:10px;">' +
+          '<input type="text" class="option-value" placeholder="Stored value" style="flex:1;">' +
+          '<button type="button" class="btn btn-outline remove-option" style="padding:0 16px;">×</button>' +
+        '</div>';
+
+      row.querySelector('.option-label').value = label || '';
+      row.querySelector('.option-value').value = value || '';
+
+      row.querySelector('.remove-option').addEventListener(
+        'click',
+        function () {
+          row.remove();
+        }
+      );
+
+      optionsList.appendChild(row);
+    }
+
+    function readOptions() {
+      var rows = optionsList.querySelectorAll('.form-row');
+      var options = [];
+
+      rows.forEach(function (row) {
+        var label = row.querySelector('.option-label').value.trim();
+        var value = row.querySelector('.option-value').value.trim();
+
+        if (label && value) {
+          options.push({ label: label, value: value });
+        }
+      });
+
+      return options;
+    }
+
+    function syncOptionsVisibility() {
+      var needsOptions =
+        OPTION_TYPES.indexOf(fieldTypeSelect.value) > -1;
+
+      wrapFieldOptions.style.display =
+        needsOptions ? '' : 'none';
+    }
+
+    fieldTypeSelect.addEventListener(
+      'change',
+      syncOptionsVisibility
+    );
+
+    document
+      .getElementById('addOptionBtn')
+      .addEventListener('click', function () {
+        addOptionRow('', '');
+      });
+
+    /*
+      Build a table row.
+    */
+    function rowHtml(field) {
+      var typeLabel = field.fieldType || 'text';
+
+      if (field.allowMultiple && field.isOrdered) {
+        typeLabel += ' (ranked list)';
+      } else if (field.allowMultiple) {
+        typeLabel += ' (multiple)';
+      }
+
+      var optionsSummary =
+        Array.isArray(field.options) && field.options.length
+          ? truncate(
+              field.options.map(function (o) { return o.label; }).join(', '),
+              50
+            )
+          : '—';
+
+      return (
+        '<tr data-field-id="' + escapeHtml(field.id) + '">' +
+
+          '<td class="cell-muted">' +
+            escapeHtml(field.sortOrder != null ? field.sortOrder : 0) +
+          '</td>' +
+
+          '<td class="cell-primary">' +
+            escapeHtml(field.fieldKey) +
+          '</td>' +
+
+          '<td class="cell-primary">' +
+            escapeHtml(field.label) +
+          '</td>' +
+
+          '<td class="cell-muted">' +
+            escapeHtml(typeLabel) +
+          '</td>' +
+
+          '<td>' +
+            '<span class="status-badge is-' +
+              (field.isRequired ? 'active' : 'inactive') +
+            '">' +
+              (field.isRequired ? 'Required' : 'Optional') +
+            '</span>' +
+          '</td>' +
+
+          '<td class="cell-muted">' +
+            escapeHtml(optionsSummary) +
+          '</td>' +
+
+          '<td class="cell-actions">' +
+            '<button type="button" class="table-action" data-edit-field="' + escapeHtml(field.id) + '">Edit</button>' +
+            '<button type="button" class="table-action is-danger" data-delete-field="' + escapeHtml(field.id) + '">Delete</button>' +
+          '</td>' +
+
+        '</tr>'
+      );
+    }
+
+    function render(fields) {
+      if (!fields.length) {
+        tbody.innerHTML =
+          '<tr>' +
+            '<td colspan="7">' +
+              '<div class="empty-state">' +
+                '<p class="empty-state-title">' +
+                  'No fields yet' +
+                '</p>' +
+                '<p>' +
+                  'Click "Add Field" to create the first field for this service.' +
+                '</p>' +
+              '</div>' +
+            '</td>' +
+          '</tr>';
+
+        return;
+      }
+
+      tbody.innerHTML = fields.map(rowHtml).join('');
+    }
+
+    async function loadFields() {
+      try {
+        var services = await window.KiAspireAPI.getAdminServices();
+
+        var service = services.filter(function (s) {
+          return String(s.id) === String(serviceId);
+        })[0];
+
+        if (!service) {
+          pageTitle.textContent = 'Service not found';
+
+          tbody.innerHTML =
+            '<tr><td colspan="7"><div class="empty-state">' +
+              '<p class="empty-state-title">Service not found</p>' +
+              '<p>It may have been deleted. <a href="services.html" style="color:var(--blue-deep); font-weight:600;">Back to Services</a></p>' +
+            '</div></td></tr>';
+
+          return;
+        }
+
+        pageTitle.textContent = 'Fields for ' + service.name;
+        addFieldBtn.disabled = false;
+
+        var fields = await window.KiAspireAPI.getServiceFields(serviceId);
+
+        allFields = fields;
+
+        render(allFields);
+      } catch (error) {
+        console.error('loadFields failed:', error);
+
+        tbody.innerHTML =
+          '<tr><td colspan="7"><div class="empty-state">' +
+            '<p class="empty-state-title">Couldn\'t load fields</p>' +
+            '<p>' + escapeHtml((error && error.message) || 'Please refresh the page.') + '</p>' +
+          '</div></td></tr>';
+      }
+    }
+
+    /*
+      Modal open/close.
+    */
+    function clearErrors() {
+      ['wrapFieldKey', 'wrapFieldLabel', 'wrapFieldOptions', 'wrapFieldSortOrder'].forEach(
+        function (id) {
+          document.getElementById(id).classList.remove('has-error');
+        }
+      );
+    }
+
+    function openModal(field) {
+      form.reset();
+      optionsList.innerHTML = '';
+      statusEl.className = 'form-status';
+      statusEl.textContent = '';
+      clearErrors();
+
+      var keyInput = document.getElementById('fieldKey');
+
+      if (field) {
+        modalTitle.textContent = 'Edit Field';
+
+        document.getElementById('fieldRecordId').value = field.id;
+
+        keyInput.value = field.fieldKey;
+        keyInput.disabled = true;
+
+        document.getElementById('fieldLabel').value = field.label || '';
+        fieldTypeSelect.value = field.fieldType || 'text';
+        document.getElementById('fieldAllowMultiple').checked = !!field.allowMultiple;
+        document.getElementById('fieldIsOrdered').checked = !!field.isOrdered;
+        document.getElementById('fieldIsRequired').checked = !!field.isRequired;
+        document.getElementById('fieldPlaceholder').value = field.placeholder || '';
+        document.getElementById('fieldHelpText').value = field.helpText || '';
+        document.getElementById('fieldSortOrder').value =
+          field.sortOrder != null ? field.sortOrder : 0;
+
+        (field.options || []).forEach(function (option) {
+          addOptionRow(option.label, option.value);
+        });
+      } else {
+        modalTitle.textContent = 'Add Field';
+
+        document.getElementById('fieldRecordId').value = '';
+        keyInput.value = '';
+        keyInput.disabled = false;
+        fieldTypeSelect.value = 'text';
+        document.getElementById('fieldSortOrder').value = 0;
+      }
+
+      syncOptionsVisibility();
+      modal.classList.add('is-open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+    }
+
+    addFieldBtn.addEventListener('click', function () {
+      openModal(null);
+    });
+
+    modal.querySelectorAll('[data-close-modal]').forEach(function (button) {
+      button.addEventListener('click', closeModal);
+    });
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+        closeModal();
+      }
+    });
+
+    tbody.addEventListener('click', async function (event) {
+      var editButton = event.target.closest('[data-edit-field]');
+
+      if (editButton) {
+        var editId = editButton.getAttribute('data-edit-field');
+
+        var field = allFields.filter(function (f) {
+          return String(f.id) === String(editId);
+        })[0];
+
+        if (!field) {
+          alert('Field information could not be found. Refresh the page and try again.');
+          return;
+        }
+
+        openModal(field);
+        return;
+      }
+
+      var deleteButton = event.target.closest('[data-delete-field]');
+
+      if (deleteButton) {
+        var deleteId = deleteButton.getAttribute('data-delete-field');
+
+        var confirmed = confirm(
+          'Delete this field? Students will no longer be asked this question, but past answers already submitted are kept.'
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        deleteButton.disabled = true;
+
+        try {
+          await window.KiAspireAPI.deleteServiceField(deleteId);
+
+          allFields = allFields.filter(function (f) {
+            return String(f.id) !== String(deleteId);
+          });
+
+          render(allFields);
+        } catch (error) {
+          console.error('deleteServiceField failed:', error);
+
+          alert((error && error.message) || 'Could not delete this field.');
+
+          deleteButton.disabled = false;
+        }
+      }
+    });
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      clearErrors();
+
+      var recordId = document.getElementById('fieldRecordId').value;
+      var isEditing = Boolean(recordId);
+
+      var fieldKey = document.getElementById('fieldKey').value.trim();
+      var label = document.getElementById('fieldLabel').value.trim();
+      var fieldType = fieldTypeSelect.value;
+      var allowMultiple = document.getElementById('fieldAllowMultiple').checked;
+      var isOrdered = document.getElementById('fieldIsOrdered').checked;
+      var isRequired = document.getElementById('fieldIsRequired').checked;
+      var placeholder = document.getElementById('fieldPlaceholder').value.trim();
+      var helpText = document.getElementById('fieldHelpText').value.trim();
+      var sortOrderValue = document.getElementById('fieldSortOrder').value.trim();
+
+      var isValid = true;
+
+      if (!isEditing) {
+        var keyValid = /^[a-z][a-z0-9_]*$/.test(fieldKey);
+
+        document.getElementById('wrapFieldKey').classList.toggle('has-error', !keyValid);
+
+        if (!keyValid) {
+          isValid = false;
+        }
+      }
+
+      document.getElementById('wrapFieldLabel').classList.toggle('has-error', !label);
+
+      if (!label) {
+        isValid = false;
+      }
+
+      var options = readOptions();
+      var needsOptions = OPTION_TYPES.indexOf(fieldType) > -1;
+
+      if (needsOptions && options.length === 0) {
+        document.getElementById('wrapFieldOptions').classList.add('has-error');
+        isValid = false;
+      }
+
+      var parsedSortOrder = Number(sortOrderValue);
+      var sortOrderInvalid =
+        sortOrderValue === '' || !Number.isFinite(parsedSortOrder) || parsedSortOrder < 0;
+
+      document.getElementById('wrapFieldSortOrder').classList.toggle('has-error', sortOrderInvalid);
+
+      if (sortOrderInvalid) {
+        isValid = false;
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      var payload = {
+        label: label,
+        fieldType: fieldType,
+        allowMultiple: allowMultiple,
+        isOrdered: isOrdered,
+        isRequired: isRequired,
+        placeholder: placeholder,
+        helpText: helpText,
+        sortOrder: parsedSortOrder,
+        options: needsOptions ? options : undefined
+      };
+
+      if (!isEditing) {
+        payload.fieldKey = fieldKey;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = isEditing ? 'Updating…' : 'Creating…';
+      statusEl.className = 'form-status';
+      statusEl.textContent = '';
+
+      try {
+        if (isEditing) {
+          await window.KiAspireAPI.updateServiceField(recordId, payload);
+        } else {
+          await window.KiAspireAPI.createServiceField(serviceId, payload);
+        }
+
+        closeModal();
+        await loadFields();
+      } catch (error) {
+        console.error('Save field failed:', error);
+
+        statusEl.className = 'form-status is-visible is-error';
+        statusEl.textContent = (error && error.message) || 'Could not save this field. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Field';
+      }
+    });
+
+    if (serviceId) {
+      loadFields();
+    }
+  </script>
+
+</body>
+</html>

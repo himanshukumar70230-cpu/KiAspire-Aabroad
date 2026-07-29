@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Admin Login — Ki Aspire Abroad</title>
-
+<title>Admin Login — KiAspire Aabroad</title>
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -367,6 +365,25 @@
     <a href="../index.html" class="login-back">
       ← Back to the main site
     </a>
+    <div class="login-logo"><img src="../Logo.webp" alt="KiAspire Aabroad"></div>
+    <h1 class="login-title">Admin Sign In</h1>
+    <p class="login-sub">Staff access only.</p>
+
+    <div class="form-status" id="formStatus"></div>
+
+    <form id="loginForm" novalidate>
+      <div class="form-field" id="fieldEmail">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" autocomplete="username" placeholder="you@kiaspireAabroad.com" required>
+        <span class="form-error">Please enter a valid email address.</span>
+      </div>
+      <div class="form-field" id="fieldPassword">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+        <span class="form-error">Please enter your password.</span>
+      </div>
+      <button type="submit" class="btn btn-dark" id="submitBtn">Sign In</button>
+    </form>
 
   </div>
 </div>

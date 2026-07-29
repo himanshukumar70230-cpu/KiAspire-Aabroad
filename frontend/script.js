@@ -49,6 +49,64 @@
     });
   }
 
+//===================== Automate collage images ================
+
+const images = [
+    "images/img1.jpg",
+    "images/img2.jpg",
+    "images/img3.jpg"
+];
+
+const heroImage = document.getElementById("heroImage");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+let currentIndex = 0;
+let timer;
+
+function showImage(index) {
+    heroImage.style.opacity = 0;
+
+    setTimeout(() => {
+        heroImage.src = images[index];
+        heroImage.style.opacity = 1;
+    }, 300);
+}
+
+function nextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    showImage(currentIndex);
+}
+
+function prevImage() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    showImage(currentIndex);
+}
+
+function startSlider() {
+    timer = setTimeout(function slide() {
+        nextImage();
+        timer = setTimeout(slide, 3000);
+    }, 3000);
+}
+
+function resetSlider() {
+    clearTimeout(timer);
+    startSlider();
+}
+
+nextBtn.addEventListener("click", () => {
+    nextImage();
+    resetSlider();
+});
+
+prevBtn.addEventListener("click", () => {
+    prevImage();
+    resetSlider();
+});
+
+startSlider();
+
   /* ---------- Scroll progress bar ---------- */
   var progressBar = document.getElementById('progressBar');
   function onScrollProgress(){
@@ -231,6 +289,18 @@ destPanels.forEach(makeDestinationClickable);
   var introEnded = false;
   var textFired = false;
 
+  // Once per browser session, not once ever — sessionStorage clears when
+  // the tab/window closes, so returning later (or in a new tab) plays the
+  // intro again, but reloading or re-visiting the homepage within the same
+  // session won't replay it.
+  var INTRO_SESSION_KEY = 'kiaspireIntroShown';
+  var introAlreadySeenThisSession = false;
+  try {
+    introAlreadySeenThisSession = sessionStorage.getItem(INTRO_SESSION_KEY) === '1';
+  } catch (e) {
+    introAlreadySeenThisSession = false;
+  }
+
   function revealHeroText(){
     if(textFired) return;
     textFired = true;
@@ -242,6 +312,7 @@ destPanels.forEach(makeDestinationClickable);
   function endIntro(){
     if(introEnded) return;
     introEnded = true;
+    try { sessionStorage.setItem(INTRO_SESSION_KEY, '1'); } catch (e) {}
     document.documentElement.style.overflow = '';
     if(introOverlay){
       introOverlay.classList.add('is-done');
@@ -251,7 +322,7 @@ destPanels.forEach(makeDestinationClickable);
     revealHeroText();
   }
 
-  var canRunIntro = !reduceMotion && coverCanvas && planeCanvas && coverCanvas.getContext;
+  var canRunIntro = !reduceMotion && !introAlreadySeenThisSession && coverCanvas && planeCanvas && coverCanvas.getContext;
 
   if(!canRunIntro){
     if(introOverlay) introOverlay.style.display = 'none';

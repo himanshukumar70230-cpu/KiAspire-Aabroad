@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+const userModel = require("../models/userModel");
 
 // Check whether the user is logged in
 const protect = async (req, res, next) => {
@@ -21,7 +21,7 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.id);
+    const user = await userModel.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({
@@ -30,7 +30,7 @@ const protect = async (req, res, next) => {
       });
     }
 
-    if (!user.isActive) {
+    if (!user.is_active) {
       return res.status(403).json({
         success: false,
         message: "Your account has been deactivated.",
@@ -83,7 +83,27 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
+// Allow only student users (the dashboard is theirs, not admin/counsellor)
+const studentOnly = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication required.",
+    });
+  }
+
+  if (req.user.role !== "student") {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied. Student account required.",
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   protect,
   adminOnly,
+  studentOnly,
 };
